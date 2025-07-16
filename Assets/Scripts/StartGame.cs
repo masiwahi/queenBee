@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class StartGame : MonoBehaviour
 {
-    public Text startBtnText;
-    private int blink = -1;
+    public Text startBtnText;   // 시작 버튼 글씨
+    private int blink = -1;     // 깜빡임 확인
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +29,7 @@ public class StartGame : MonoBehaviour
         }
     }
 
-
+    // 시작 버튼 누를 시 메인 씬으로 이동
     public void StartButtonClick()
     {
         SceneManager.LoadScene("MainScene");

@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class queenSleep : MonoBehaviour
 {
-    private Vector2 home;
-    private GameObject[] UpgradePanel;
+    private Vector2 home;               // ¿©¿Õ¹ú º¹±Í À§Ä¡
+    private GameObject[] UpgradePanel;  // ¾÷±×·¹ÀÌµå ¸Þ´º
 
 
     // Start is called before the first frame update

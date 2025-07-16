@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class HoneyMove : MonoBehaviour
 {
-    public Vector2 point;
+    public Vector2 point;   // ²ÜÀÌ ¹ú·Á¼­ µé¾î¿À´Â À§Ä¡
 
-    Text txt;
+    Text txt;               // ¹ú¾î¿À´Â ²Ü ±Ý¾×
 
     // Start is called before the first frame update
     void Start()

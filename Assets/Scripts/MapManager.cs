@@ -9,22 +9,23 @@ using UnityEngine.UI;
 public class MapManager : MonoBehaviour
 {
 
-    public string Map;
+    public string Map;              // 선택한 맵 스킨
 
-    public Text RoyalJellyText;         // 로얄젤리 양 확인하는 글씨
+    public Text RoyalJellyText;     // 로얄젤리 양 확인하는 글씨
 
-    public Sprite jellyImg;
-    public Sprite jellyLockImg;
+    public Sprite jellyImg;         // 로얄젤리 이미지
+    public Sprite jellyLockImg;     // 빈 로얄 젤리 이미지
 
-    public static bool[] mapSkinList = { true, false, false, false, false, false, false };
-    private long[] mapSkinPriceList = { 0, 1000, 10000, 15000, 30000, 50000, 60000 };
-    public static float[] minTempList = { -5, -6, -2, -3, -4, 0, -1 };
-    public static float[] maxTempList = { 15, 10, 12, 27, 16, 25, 20 };
+    public static bool[] mapSkinList = { true, false, false, false, false, false, false };  // 맵 스킨 구매 여부
+    private long[] mapSkinPriceList = { 0, 1000, 10000, 15000, 30000, 50000, 60000 };       // 맵 스킨 구매 가격
+    public static float[] minTempList = { -5, -6, -2, -3, -4, 0, -1 };                      // 맵 스킨 별 최저 온도
+    public static float[] maxTempList = { 15, 10, 12, 27, 16, 25, 20 };                     // 맵 스킨 별 최고 온도
 
     // Start is called before the first frame update
     void Start()
     {
         ShowSkinMoney();
+        ShowSkinTemperature();
     }
 
     // Update is called once per frame
@@ -34,18 +35,20 @@ public class MapManager : MonoBehaviour
         ActiveSkinMoney();
     }
 
+    // 현재 보유한 로얄 젤리 개수 업데이트
     void ShowJelly()
     {
-        if (GameManager.royalJelly == 0)                                                // 보유한 로얄젤리 개수가 0개인지 확인
+        if (GameManager.royalJelly == 0)
         {
-            RoyalJellyText.text = "0";                                    // 로얄젤리 0 개로 표시
+            RoyalJellyText.text = "0";
         }
         else
         {
-            RoyalJellyText.text = DivideNumber(GameManager.royalJelly);    // 보유한 로얄젤리 개수 표시
+            RoyalJellyText.text = DivideNumber(GameManager.royalJelly);
         }
     }
 
+    // 맵 스킨 선택
     public void mapSkinSelect(GameObject skin)
     {
         string skinName = skin.GetComponent<SpriteRenderer>().name;
@@ -67,6 +70,7 @@ public class MapManager : MonoBehaviour
         GameManager.minTemp = minTempList[skinNum];
     }
 
+    //맵 스킨 구매
     public void mapSkinBuy(GameObject skin)
     {
         string skinName = skin.GetComponent<SpriteRenderer>().name;
@@ -99,6 +103,20 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    // 맵 스킨 온도 표시
+    void ShowSkinTemperature()
+    {
+        GameObject[] imageList = GameObject.FindGameObjectsWithTag("tempBottle");
+
+        for (int i = 0; i < imageList.Length; i++)
+        {
+            Transform bottleText = imageList[i].transform.Find("Text");
+            bottleText.GameObject().GetComponent<Text>().text = minTempList[i] + " ~ " + maxTempList[i];
+
+        }
+    }
+
+    // 맵 스킨 구매 가격 표시
     void ShowSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
@@ -113,6 +131,7 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    // 맵 스킨 구매 가격 미달시 비활성화
     void ActiveSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
@@ -141,16 +160,19 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    // 맵 스킨 선택 페이지 들어가기
     public void StartEnterMap()
     {
         Map = GameManager.Map;
     }
 
+    // 맵 스킨 선택 페이지 나가기
     public void StartExitMap()
     {
         GameManager.Map = Map;
     }
 
+    // 숫자가 천단위 기준으로 반올림하여 문자로 축약 계산
     string DivideNumber(long num)
     {
         long divineNum = num;

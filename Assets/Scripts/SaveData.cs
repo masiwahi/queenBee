@@ -1,38 +1,38 @@
 [System.Serializable]
 public class SaveData
 {
-    public long royalJelly;             // 환생(분봉) 재화
-    public long honey;                  // 기본 재화
+    public long royalJelly;
+    public long honey;
 
-    public float temperature;           // 온도
+    public float temperature;
 
-    public long queenHealth;            // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long queenHealthPrice;       // 여왕(클리커) 체력이 강화 비용
-    public long queenStorage;           // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long queenStoragePrice;      // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
+    public long queenHealth;
+    public long queenHealthPrice;
+    public long queenStorage;
+    public long queenStoragePrice;
 
-    public long beeHealthPrice;         // 일벌(오토) 체력이 강화 비용
-    public long beeStoragePrice;        // 일벌(오토) 꿀주머니(저장공간) 강화 비용
-    public long beeSpeedPrice;          // 일벌(오토) 꿀주머니(저장공간) 강화 비용
+    public long beeHealthPrice;
+    public long beeStoragePrice;
+    public long beeSpeedPrice;
 
-    public long beeCount;               // 꿀벌(오토) 가동 수
-    public long beeCountPrice;          // 꿀벌(오토) 구매 가격
-    public long honeyComb;              // 꿀벌이 지낼 수 있는 공간(벌집)
-    public long honeyCombPrice;         // 꿀벌이 지낼 수 있는 공간(벌집) 구매 가격
+    public long beeCount;
+    public long beeCountPrice;
+    public long honeyComb;
+    public long honeyCombPrice;
 
-    public long royalQueenHealth;       // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long royalQueenHealthPrice;  // 여왕(클리커) 체력이 강화 비용
-    public long royalQueenStorage;      // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long royalQueenStoragePrice; // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
-    public long royalBeeHealthPrice;    // 일벌(오토) 체력이 강화 비용
-    public long royalBeeStoragePrice;   // 일벌(오토) 꿀주머니(저장공간) 강화 비용
+    public long royalQueenHealth;
+    public long royalQueenHealthPrice;
+    public long royalQueenStorage;
+    public long royalQueenStoragePrice;
+    public long royalBeeHealthPrice;
+    public long royalBeeStoragePrice;
 
-    public long beeHealth;              // 꿀벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long beeStorage;             // 꿀벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long beeSpeed;               // 꿀벌(오토) 속도가 오르면 꿀을 더 빨리 가져옴
+    public long beeHealth;
+    public long beeStorage;
+    public long beeSpeed;
 
-    public long royalBeeHealth;         // 꿀벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long royalBeeStorage;        // 꿀벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
+    public long royalBeeHealth;
+    public long royalBeeStorage;
 
     public string Queen;
     public string Bee;

@@ -1,12 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class beeSleep : MonoBehaviour
 {
-    private bool beeBool = true;
-    private Vector2 home;
+    private bool beeBool = true;    // 잠에서 꺠어났는지 확인
+    private Vector2 home;           // 일벌 위치 화긴
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +23,7 @@ public class beeSleep : MonoBehaviour
         }
     }
 
+    // 서로 다른 타이밍에 일벌 기상
     IEnumerator BeeAwake()
     {
         int rand = Random.Range(0, 11);

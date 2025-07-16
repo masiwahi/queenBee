@@ -6,24 +6,25 @@ using UnityEngine.XR;
 
 public class mainCameraDrag : MonoBehaviour
 {
-    private Transform tr;
-    private Vector2 firstTouch;
+    private Transform tr;                       // 화면의 현재 위치
+    private Vector2 firstTouch;                 // 화면 드래그 시작 위치
 
-    public GameObject skinBackground;
+    public GameObject skinBackground;           // 스킨 페이지 배경 화면
 
-    public static float limitMinY = -0.4f;
-    public static float limitMaxY = 0;
+    public static float limitMinY = -0.4f;      // 카메라 최소 위치 값
+    public static float limitMaxY = 0;          // 카메라 최대 위치 값
 
-    public static float skinLimitMinY = -0.48f;
+    public static float skinLimitMinY = -0.48f; // 스킨페이지 최소 위치 값
 
-    public static float mainLimitMinY = -0.4f;
+    public static float mainLimitMinY = -0.4f;  // 메인 페이지 최소 위치 값
 
-    public float dragSpeed = 0.05f;
+    public float dragSpeed = 0.05f;             // 화면 내리는 속도
 
     // Start is called before the first frame update
     void Start()
     {
         tr = GetComponent<Transform>();
+        SetResolution();
     }
 
     // Update is called once per frame
@@ -32,6 +33,30 @@ public class mainCameraDrag : MonoBehaviour
         Move();
     }
 
+    /* 해상도 설정하는 함수 */
+    public void SetResolution()
+    {
+        int setWidth = 1440; // 사용자 설정 너비
+        int setHeight = 2560; // 사용자 설정 높이
+
+        int deviceWidth = Screen.width; // 기기 너비 저장
+        int deviceHeight = Screen.height; // 기기 높이 저장
+
+        Screen.SetResolution(setWidth, (int)(((float)deviceHeight / deviceWidth) * setWidth), true); // SetResolution 함수 제대로 사용하기
+
+        if ((float)setWidth / setHeight < (float)deviceWidth / deviceHeight) // 기기의 해상도 비가 더 큰 경우
+        {
+            float newWidth = ((float)setWidth / setHeight) / ((float)deviceWidth / deviceHeight); // 새로운 너비
+            Camera.main.rect = new Rect((1f - newWidth) / 2f, 0f, newWidth, 1f); // 새로운 Rect 적용
+        }
+        else // 게임의 해상도 비가 더 큰 경우
+        {
+            float newHeight = ((float)deviceWidth / deviceHeight) / ((float)setWidth / setHeight); // 새로운 높이
+            Camera.main.rect = new Rect(0f, (1f - newHeight) / 2f, 1f, newHeight); // 새로운 Rect 적용
+        }
+    }
+
+    // 화면 드래그 시 화면 상하 이동
     void Move()
     {
         if (Input.GetMouseButtonDown(0))
@@ -64,6 +89,7 @@ public class mainCameraDrag : MonoBehaviour
         }
     }
 
+    // 스킨 페이지 들어가기
     public void EnterSkinSelect()
     {
         tr.position = new Vector3(-24, 0, -10);
@@ -71,30 +97,35 @@ public class mainCameraDrag : MonoBehaviour
         limitMinY = skinLimitMinY;
     }
 
+    // 여왕 스킨 선택 페이지 이동
     public void QueenSkinSelect()
     {
         tr.position = new Vector3(-24, 0, -10);
         skinBackground.GetComponent<Transform>().position = new Vector3(-24, 0, 0);
     }
 
+    // 일벌 스킨 선택 페이지 이동
     public void BeeSkinSelect()
     {
         tr.position = new Vector3(-16, 0, -10);
         skinBackground.GetComponent<Transform>().position = new Vector3(-16, 0, 0);
     }
 
+    // 스킨 페이지 나가기
     public void ExitSkinSelect()
     {
         tr.position = new Vector3(0, 0, -10);
         limitMinY = mainLimitMinY;
     }
 
+    // 맵 스킨 페이지 들어가기
     public void EnterMapSelect()
     {
         tr.position = new Vector3(16, 0, -10);
         limitMinY = 0;
     }
 
+    // 맵 스킨 페이지 나가기
     public void ExitMapSelect()
     {
         tr.position = new Vector3(0, 0, -10);

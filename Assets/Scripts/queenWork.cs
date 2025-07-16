@@ -3,17 +3,17 @@ using UnityEngine;
 
 public class queenWork : MonoBehaviour
 {
-    private Animator anim;
-    private bool isClicked = false;
-    private Vector3 home;
+    private Animator anim;              // 여왕벌 애니메이션 효과
+    private bool isClicked = false;     // 화면 클릭 여부
+    private Vector3 home;               // 여왕벌 복귀 위치
 
-    private float lastClickTime;
-    private float comebackTime = 0.5f;
+    private float lastClickTime;        // 마지막 클릭 시간
+    private float comebackTime = 0.5f;  // 마지막 클릭 시간 후 여왕벌 복귀까지 남은 시간
 
-    private GameObject[] UpgradePanel;
+    private GameObject[] UpgradePanel;  // 업그레이드 메뉴
 
-    float randX;
-    float randY;
+    float randX;                        // 여왕벌이 날아갈 랜덤 X 좌표
+    float randY;                        // 여왕벌이 날아갈 래덤 Y 좌표
 
     // Start is called before the first frame update
     void Start()
@@ -77,6 +77,7 @@ public class queenWork : MonoBehaviour
         }
     }
 
+    // 클릭 중단 시 애니메이션 초기화
     void ResetAnimation()
     {
         isClicked = false;

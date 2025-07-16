@@ -7,17 +7,17 @@ using UnityEngine;
 
 public class beeWork : MonoBehaviour
 {
-    public static long beeHealth = 0;           // 꿀벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public static long beeStorage = 1;          // 꿀벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public static long beeSpeed = 0;            // 꿀벌(오토) 속도가 오르면 꿀을 더 빨리 가져옴
+    public static long beeHealth = 0;           // 일벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
+    public static long beeStorage = 1;          // 일벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
+    public static long beeSpeed = 0;            // 일벌(오토) 속도가 오르면 꿀을 더 빨리 가져옴
 
-    public static long royalBeeHealth = 0;      // 꿀벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public static long royalBeeStorage = 0;     // 꿀벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
+    public static long royalBeeHealth = 0;      // 일벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
+    public static long royalBeeStorage = 0;     // 일벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
 
-    private Animator anim;
-    private bool halftime = true;
-    public Vector2 point;
-    private Vector3 home;
+    private Animator anim;                      // 일벌 움직이는 애니메이션
+    private bool halftime = true;               // 일벌이 꿀 가져오는 시간
+    public Vector2 point;                       // 일벌이 꿀 가져오는 위치
+    private Vector3 home;                       // 일벌이 집으로 돌아오는 위치
 
     // Start is called before the first frame update
     void Start()
@@ -67,15 +67,15 @@ public class beeWork : MonoBehaviour
         }
     }
 
-    // beeSpeed의 속도로 꿀을 벌어오는 함수
+    // 일벌 속도 만큼 꿀을 벌어오는 함수
     IEnumerator Work()
     {
-        while (true)                                                                        // 일벌은 무한으로 돈을 벌어옴
+        while (true)
         {
 
             if (GameManager.temperature >= 0)
             {
-                GameManager.honey += beeStorage + beeHealth + royalBeeHealth + royalBeeStorage;          //게임 매니저에 있는 꿀 양 업데이트
+                GameManager.honey += beeStorage + beeHealth + royalBeeHealth + royalBeeStorage;
             }
 
             float spotX = home.x;
@@ -90,13 +90,14 @@ public class beeWork : MonoBehaviour
             float spotY = home.y + Random.Range(1, 4);
             point = new Vector2(spotX, spotY);
 
-            yield return new WaitForSeconds(12f - beeSpeed/5);                              //beeSpeed 만큼의 시간동안 일시정지 후 다시 돈 벌어오기
+            yield return new WaitForSeconds(12f - beeSpeed/5);
         }
     }
 
+    // 일정 시간마다 꿀 가져오는 애니메이션 적용
     IEnumerator CarryHoney()
     {
-        while (true)                                                                        // 일벌은 무한으로 돈을 벌어옴
+        while (true)
         {
             if (!halftime )
             {
@@ -109,7 +110,7 @@ public class beeWork : MonoBehaviour
                 anim.SetBool("halftime", false);
             }
 
-            yield return new WaitForSeconds((12f - beeSpeed / 5) / 2);                              //beeSpeed 만큼의 시간동안 일시정지 후 다시 돈 벌어오기
+            yield return new WaitForSeconds((12f - beeSpeed / 5) / 2);
         }
     }
 }

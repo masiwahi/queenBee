@@ -12,6 +12,7 @@ TagManager:
   - honeycombBackground
   - mapSkin
   - upgradePanel
+  - tempBottle
   layers:
   - Default
   - TransparentFX

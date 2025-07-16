@@ -9,29 +9,29 @@ using UnityEngine.XR;
 
 public class SkinManager : MonoBehaviour
 {
-    public Image queenSelectSkinImage;
-    public Image beeSelectSkinImage;
+    public Image queenSelectSkinImage;      // 여왕벌 선택 스킨 이미지
+    public Image beeSelectSkinImage;        // 일벌 선택 스킨 이미지
 
-    public Text HoneyText;              // 꿀벌 양 체크하는 글씨
-    public Text RoyalJellyText;         // 로얄젤리 양 확인하는 글씨
+    public Text HoneyText;                  // 꿀벌 양 체크하는 글씨
+    public Text RoyalJellyText;             // 로얄젤리 양 확인하는 글씨
 
-    public Sprite selectImg;
-    public Sprite basicImg;
-    public Sprite jellyImg;
-    public Sprite honeyImg;
-    public Sprite jellyLockImg;
-    public Sprite honeyLockImg;
+    public Sprite selectImg;                // 선택시 배경 이미지
+    public Sprite basicImg;                 // 미선택시 배경 이미지
+    public Sprite jellyImg;                 // 로얄젤리 이미지
+    public Sprite honeyImg;                 // 벌꿀 이미지
+    public Sprite jellyLockImg;             // 비어있는 로얄젤리 이미지
+    public Sprite honeyLockImg;             // 비어있는 벌꿀 이미지
 
-    public string Queen;
-    public static string Bee = "beeBasic";
+    public string Queen;                    // 여왕 선택 스킨 이름
+    public static string Bee = "beeBasic";  // 일벌 선택 스킨 이름
 
-    public static bool[] queenSkinList = { true, false, false, false, false, false, false, false, false, false, false };
-    private bool[] queenSkinJellyList = { false, false, false, true, true, true, true, true, true, true, true };
-    private long[] queenSkinPriceList = { 0, 10000, 100000, 1000, 10000, 15000, 30000, 50000, 70000, 100000, 150000 };
+    public static bool[] queenSkinList = { true, false, false, false, false, false, false, false, false, false, false };    // 여왕 구매 스킨 목록
+    private bool[] queenSkinJellyList = { false, false, false, true, true, true, true, true, true, true, true };            // 여왕 스킨 젤리로 구매 가능 여부
+    private long[] queenSkinPriceList = { 0, 10000, 100000, 1000, 10000, 15000, 30000, 50000, 70000, 100000, 150000 };      // 여왕 스킨 가격
 
-    public static bool[] beeSkinList = { true, false, false, false, false, false, false, false, false, false, false };
-    private bool[] beeSkinJellyList = { false, false, false, true, true, true, true, true, true, true, true };
-    private long[] beeSkinPriceList = { 0, 15000, 150000, 1500, 15000, 20000, 35000, 60000, 80000, 130000, 200000 };
+    public static bool[] beeSkinList = { true, false, false, false, false, false, false, false, false, false, false };      // 일벌 구매 스킨 목록
+    private bool[] beeSkinJellyList = { false, false, false, true, true, true, true, true, true, true, true };              // 일벌 스킨 젤리로 구매 가능 여부
+    private long[] beeSkinPriceList = { 0, 15000, 150000, 1500, 15000, 20000, 35000, 60000, 80000, 130000, 200000 };        // 일벌 스킨 가격
 
     // Start is called before the first frame update
     void Start()
@@ -46,27 +46,29 @@ public class SkinManager : MonoBehaviour
         ActiveSkinMoney();
     }
 
+    // 화면 상단 로얄젤리와 벌꿀양 업데이트
     void ShowHoney()
     {
-        if (GameManager.honey == 0)                                                     // 보유한 꿀 개수가 0개인지 확인
+        if (GameManager.honey == 0) 
         {
-            HoneyText.text = "0";                                         // 꿀 0 개로 표시
+            HoneyText.text = "0";
         }
         else
         {
-            HoneyText.text = DivideNumber(GameManager.honey);              // 보유한 꿀 개수 표시
+            HoneyText.text = DivideNumber(GameManager.honey);
         }
 
-        if (GameManager.royalJelly == 0)                                                // 보유한 로얄젤리 개수가 0개인지 확인
+        if (GameManager.royalJelly == 0)
         {
-            RoyalJellyText.text = "0";                                    // 로얄젤리 0 개로 표시
+            RoyalJellyText.text = "0";
         }
         else
         {
-            RoyalJellyText.text = DivideNumber(GameManager.royalJelly);    // 보유한 로얄젤리 개수 표시
+            RoyalJellyText.text = DivideNumber(GameManager.royalJelly);
         }
     }
 
+    // 여왕 스킨 선택
     public void queenSkinSelect(GameObject skin)
     {
         queenSelectSkinImage.sprite = skin.GetComponent<SpriteRenderer>().sprite;
@@ -89,6 +91,7 @@ public class SkinManager : MonoBehaviour
         Queen = skinName.Substring(0, skinName.Length - 1);
     }
 
+    // 여왕 스킨 구매
     public void queenSkinBuy(GameObject skin)
     {
         string skinName = skin.GetComponent<SpriteRenderer>().sprite.name;
@@ -143,6 +146,7 @@ public class SkinManager : MonoBehaviour
         }
     }
 
+    // 일벌 스킨 구매
     public void beeSkinSelect(GameObject skin)
     {
         beeSelectSkinImage.sprite = skin.GetComponent<SpriteRenderer>().sprite;
@@ -164,6 +168,7 @@ public class SkinManager : MonoBehaviour
         Bee = skinName.Substring(0, skinName.Length - 1);
     }
 
+    //일벌 스킨 구매
     public void beeSkinBuy(GameObject skin)
     {
         string skinName = skin.GetComponent<SpriteRenderer>().sprite.name;
@@ -218,17 +223,19 @@ public class SkinManager : MonoBehaviour
         }
     }
 
+    // 스킨 페이지 들어가기
     public void StartEnterSkin()
     {
         Bee = GameManager.Bee;
         Queen = GameManager.Queen;
     }
-
+    // 스킨 페이지 나가기
     public void StartExitSkin()
     {
         GameManager.Queen = Queen;
     }
 
+    // 스킨 구매 가격 보여주기
     void ShowSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
@@ -264,6 +271,7 @@ public class SkinManager : MonoBehaviour
         }
     }
 
+    //스킨 구매 가능시 구매버튼 활성화
     void ActiveSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
@@ -358,6 +366,7 @@ public class SkinManager : MonoBehaviour
         }
     }
 
+    // 숫자가 천단위 기준으로 반올림하여 문자로 축약 계산
     string DivideNumber(long num)
     {
         long divineNum = num;

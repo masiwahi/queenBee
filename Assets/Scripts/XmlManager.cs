@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class XmlManager
 {
+    // 진행 내역 저장
     public static void XmlSave<T>(T classForSave, string path)
     {
         System.Xml.Serialization.XmlSerializer sr = new System.Xml.Serialization.XmlSerializer(typeof(T));
@@ -14,6 +15,7 @@ public class XmlManager
         }
     }
 
+    // 저장 내역 불러오기
     public static T XmlLoad<T>(string path)
     {
         System.Xml.Serialization.XmlSerializer sr = new System.Xml.Serialization.XmlSerializer(typeof(T));

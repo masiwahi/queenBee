@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,103 +8,105 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static long royalJelly = 1000000;             // 환생(분봉) 재화
-    public static long honey = 10000000;                  // 기본 재화
+    public static long royalJelly = 100000;      // 환생(분봉) 재화
+    public static long honey = 100000;           // 기본 재화
 
-    public static float temperature = 1f;             // 온도(온도에 따라 활동기가 있음)
-    public float temperatureChange = 0.5f;
-    public static float minTemp = -5f;
-    public static float maxTemp = 15f;
+    public static float temperature = 1f;   // 온도(온도에 따라 활동기가 있음)
+    public float temperatureChange = 0.5f;  // 온도 변화량
+    public static float minTemp = -5f;      // 최저 온도
+    public static float maxTemp = 15f;      // 최고 온도
 
-    public long queenHealth;            // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long queenHealthPrice;       // 여왕(클리커) 체력이 강화 비용
-    public long queenStorage;           // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long queenStoragePrice;      // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
+    public long queenHealth;                // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
+    public long queenHealthPrice;           // 여왕(클리커) 체력이 강화 비용
+    public long queenStorage;               // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
+    public long queenStoragePrice;          // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
 
-    public long beeHealthPrice;         // 일벌(오토) 체력이 강화 비용
-    public long beeStoragePrice;        // 일벌(오토) 꿀주머니(저장공간) 강화 비용
-    public long beeSpeedPrice;          // 일벌(오토) 꿀주머니(저장공간) 강화 비용
+    public long beeHealthPrice;             // 일벌(오토) 체력이 강화 비용
+    public long beeStoragePrice;            // 일벌(오토) 꿀주머니(저장공간) 강화 비용
+    public long beeSpeedPrice;              // 일벌(오토) 꿀주머니(저장공간) 강화 비용
 
-    public long beeCount;               // 꿀벌(오토) 가동 수
-    public long beeCountPrice;          // 꿀벌(오토) 구매 가격
-    public long honeyComb;              // 꿀벌이 지낼 수 있는 공간(벌집)
-    public long honeyCombPrice;         // 꿀벌이 지낼 수 있는 공간(벌집) 구매 가격
+    public long beeCount;                   // 꿀벌(오토) 가동 수
+    public long beeCountPrice;              // 꿀벌(오토) 구매 가격
+    public long honeyComb;                  // 꿀벌이 지낼 수 있는 공간(벌집)
+    public long honeyCombPrice;             // 꿀벌이 지낼 수 있는 공간(벌집) 구매 가격
 
-    public int honeyCombWidth;          // 가로 벌집 최대 설치 수
-    public float honeyCombX;            // 벌집 가로 간격
-    public float honeyCombY;            // 벌집 세로 간격
+    public int honeyCombWidth;              // 가로 벌집 최대 설치 수
+    public float honeyCombX;                // 벌집 가로 간격
+    public float honeyCombY;                // 벌집 세로 간격
 
-    public long royalQueenHealth;            // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long royalQueenHealthPrice;       // 여왕(클리커) 체력이 강화 비용
-    public long royalQueenStorage;           // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long royalQueenStoragePrice;      // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
-    public long royalBeeHealthPrice;         // 일벌(오토) 체력이 강화 비용
-    public long royalBeeStoragePrice;        // 일벌(오토) 꿀주머니(저장공간) 강화 비용
+    public long royalQueenHealth;           // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
+    public long royalQueenHealthPrice;      // 여왕(클리커) 체력이 강화 비용
+    public long royalQueenStorage;          // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
+    public long royalQueenStoragePrice;     // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
+    public long royalBeeHealthPrice;        // 일벌(오토) 체력이 강화 비용
+    public long royalBeeStoragePrice;       // 일벌(오토) 꿀주머니(저장공간) 강화 비용
 
-    public Text HoneyText;              // 꿀벌 양 체크하는 글씨
-    public Text RoyalJellyText;         // 로얄젤리 양 확인하는 글씨
-    public Text temperatureText;
+    public Text HoneyText;                  // 꿀벌 양 체크하는 글씨
+    public Text RoyalJellyText;             // 로얄젤리 양 확인하는 글씨
+    public Text temperatureText;            // 온도 변화 확인하는 글씨
 
-    public Text queenHealthText;        // 여왕벌 체력 강화확인 글씨
-    public Text queenStorageText;       // 여왕벌 꿀주머니 강화확인 글씨
-    public Text honeyCombText;          // 벌집 강화확인 글씨
-    public Text queenHealthLevel;        // 여왕벌 체력 강화확인 글씨
-    public Text queenStorageLevel;       // 여왕벌 꿀주머니 강화확인 글씨
-    public Text honeyCombLevel;          // 벌집 강화확인 글씨
+    public Text queenHealthText;            // 여왕벌 체력 강화확인 글씨
+    public Text queenStorageText;           // 여왕벌 꿀주머니 강화확인 글씨
+    public Text honeyCombText;              // 벌집 강화확인 글씨
+    public Text queenHealthLevel;           // 여왕벌 체력 강화확인 글씨
+    public Text queenStorageLevel;          // 여왕벌 꿀주머니 강화확인 글씨
+    public Text honeyCombLevel;             // 벌집 강화확인 글씨
 
-    public Text beeHealthText;          // 일벌 체력 강화확인 글씨
-    public Text beeStorageText;         // 일벌 꿀주머니 강화확인 글씨
-    public Text beeSpeedText;           // 일벌 꿀주머니 강화확인 글씨
-    public Text beeCountText;           // 일벌 수 강화확인 글씨
-    public Text beeHealthLevel;          // 일벌 체력 강화확인 글씨
-    public Text beeStorageLevel;         // 일벌 꿀주머니 강화확인 글씨
-    public Text beeSpeedLevel;           // 일벌 꿀주머니 강화확인 글씨
-    public Text beeCountLevel;           // 일벌 수 강화확인 글씨
+    public Text beeHealthText;              // 일벌 체력 강화확인 글씨
+    public Text beeStorageText;             // 일벌 꿀주머니 강화확인 글씨
+    public Text beeSpeedText;               // 일벌 꿀주머니 강화확인 글씨
+    public Text beeCountText;               // 일벌 수 강화확인 글씨
+    public Text beeHealthLevel;             // 일벌 체력 강화확인 글씨
+    public Text beeStorageLevel;            // 일벌 꿀주머니 강화확인 글씨
+    public Text beeSpeedLevel;              // 일벌 꿀주머니 강화확인 글씨
+    public Text beeCountLevel;              // 일벌 수 강화확인 글씨
 
-    public Text royalQueenHealthText;        // 여왕벌 체력 강화확인 글씨
-    public Text royalQueenStorageText;       // 여왕벌 꿀주머니 강화확인 글씨
-    public Text royalBeeHealthText;          // 일벌 체력 강화확인 글씨
-    public Text royalBeeStorageText;         // 일벌 꿀주머니 강화확인 글씨
-    public Text royalQueenHealthLevel;        // 여왕벌 체력 강화확인 글씨
-    public Text royalQueenStorageLevel;       // 여왕벌 꿀주머니 강화확인 글씨
-    public Text royalBeeHealthLevel;          // 일벌 체력 강화확인 글씨
-    public Text royalBeeStorageLevel;         // 일벌 꿀주머니 강화확인 글씨
+    public Text royalQueenHealthText;       // 여왕벌 체력 강화확인 글씨
+    public Text royalQueenStorageText;      // 여왕벌 꿀주머니 강화확인 글씨
+    public Text royalBeeHealthText;         // 일벌 체력 강화확인 글씨
+    public Text royalBeeStorageText;        // 일벌 꿀주머니 강화확인 글씨
+    public Text royalQueenHealthLevel;      // 여왕벌 체력 강화확인 글씨
+    public Text royalQueenStorageLevel;     // 여왕벌 꿀주머니 강화확인 글씨
+    public Text royalBeeHealthLevel;        // 일벌 체력 강화확인 글씨
+    public Text royalBeeStorageLevel;       // 일벌 꿀주머니 강화확인 글씨
 
-    public Button queenHealthBtn;       // 여왕벌 체력 강화 버튼
-    public Button queenStorageBtn;      // 여왕벌 꿀주머니 강화 버튼
-    public Button honeyCombBtn;         // 벌집 강화 버튼
-    public Button swarmingBtn;
+    public Button queenHealthBtn;           // 여왕벌 체력 강화 버튼
+    public Button queenStorageBtn;          // 여왕벌 꿀주머니 강화 버튼
+    public Button honeyCombBtn;             // 벌집 강화 버튼
+    public Button swarmingBtn;              // 분봉하기 버튼
 
-    public Button beeHealthBtn;         // 일벌 체력 강화 버튼
-    public Button beeStorageBtn;        // 일벌 꿀주머니 강화 버튼
-    public Button beeSpeedBtn;          // 일벌 꿀주머니 강화 버튼
-    public Button beeCountBtn;          // 일벌 수 강화 버튼
+    public Button beeHealthBtn;             // 일벌 체력 강화 버튼
+    public Button beeStorageBtn;            // 일벌 꿀주머니 강화 버튼
+    public Button beeSpeedBtn;              // 일벌 꿀주머니 강화 버튼
+    public Button beeCountBtn;              // 일벌 수 강화 버튼
 
-    public Button royalQueenHealthBtn;       // 여왕벌 체력 강화 버튼
-    public Button royalQueenStorageBtn;      // 여왕벌 꿀주머니 강화 버튼
-    public Button royalBeeHealthBtn;         // 일벌 체력 강화 버튼
-    public Button royalBeeStorageBtn;        // 일벌 꿀주머니 강화 버튼
+    public Button royalQueenHealthBtn;      // 여왕벌 체력 강화 버튼
+    public Button royalQueenStorageBtn;     // 여왕벌 꿀주머니 강화 버튼
+    public Button royalBeeHealthBtn;        // 일벌 체력 강화 버튼
+    public Button royalBeeStorageBtn;       // 일벌 꿀주머니 강화 버튼
 
-    public GameObject prefabHoney;      // 클릭시 꿀이 늘어나는 모션
-    public GameObject prefabHoneyComb;  // 벌집 구매시 증가하는 벌집
-    public GameObject prefabHoneyCombBG;
+    public GameObject prefabHoney;          // 클릭시 꿀이 늘어나는 모션
+    public GameObject prefabHoneyComb;      // 벌집 구매시 증가하는 벌집
+    public GameObject prefabHoneyCombBG;    // 벌집 구매시 증가하는 벌집 배경
+    public GameObject prefabAd;          // 클릭시 광고시청 보상
 
-    public static string Queen = "queenBee";
-    public static string Bee = "beeBasic";
+    public static string Queen = "queenBee";// 여왕 스킨 이름
+    public static string Bee = "beeBasic";  // 일벌 스킨 이름
 
-    public static string Map = "Basic";
+    public static string Map = "Basic";     // 맵 스킨 이름
 
-    public Image queenSelectSkinImage;
-    public Image beeSelectSkinImage;
-    public GameObject backgroundImage;
-    public GameObject hiveImage;
+    public Image queenSelectSkinImage;      // 여왕 스킨 선택 이미지
+    public Image beeSelectSkinImage;        // 일벌 스킨 선택 이미지
+    public GameObject backgroundImage;      // 배경 스킨 이미지
+    public GameObject hiveImage;            // 벌집 배경 스킨 이미지
 
-    private int upgradeGraph = 17;
-    private int combGraph = 57;
-    private int beeGraph = 37;
-    private int speedGraph = 137;
+    private int upgradeGraph = 17;          // 일반 강화 상승 비율
+    private int combGraph = 57;             // 벌집 강화 상승 비율
+    private int beeGraph = 37;              // 일벌 수 강화 상승 비율
+    private int speedGraph = 137;           // 일벌 속도 강화 상승 비율
 
-    private Vector2 queenSpot;
+    private Vector2 queenSpot;              // 여왕 복귀 지점
+    public GameObject tutorial;             // 튜토리얼 표시 화면
 
     // Start is called before the first frame update
     void Start()
@@ -115,6 +118,7 @@ public class GameManager : MonoBehaviour
             Load();
             FillHoneyComb();
             FillBee();
+            tutorial.SetActive(false);
         }
         else
         {
@@ -125,6 +129,7 @@ public class GameManager : MonoBehaviour
         MapSelect();
         QueenSkinSelect();
         StartCoroutine(TemperatureChangeWork());
+        StartCoroutine(advertiseWork());
     }
 
     // Update is called once per frame
@@ -163,11 +168,14 @@ public class GameManager : MonoBehaviour
 
         HoneyIncrease();
     }
+
+    // 게임 종료시 진행 내역 저장
     private void OnApplicationQuit()
     {
         Save();
     }
 
+    // 시간마다 온도 변화
     IEnumerator TemperatureChangeWork()
     {
         while (true)
@@ -186,10 +194,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    IEnumerator advertiseWork()
+    {
+        while (true)
+        {
+            Instantiate(prefabAd, new Vector2(-3.5f, 3.5f), Quaternion.identity);
+
+            yield return new WaitForSeconds(50f);
+        }
+    }
+
     // 화면 클릭 시 꿀 획득 (여왕벌이 꿀을 구해 옴)
     void HoneyIncrease()
     {
-        if (Input.GetMouseButtonDown(0))                                                         // 화면을 터치했는지 확인
+        if (Input.GetMouseButtonDown(0))
         {
             Vector2 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Ray2D ray = new Ray2D(wp, Vector2.zero);
@@ -198,10 +216,10 @@ public class GameManager : MonoBehaviour
             {
                 if (temperature >= 0 && EventSystem.current.IsPointerOverGameObject() == false)
                 {
-                    honey += queenHealth + queenStorage + royalQueenHealth + royalQueenStorage;     // 강화된 여왕벌 스펙에 따른 꿀 획득
+                    honey += queenHealth + queenStorage + royalQueenHealth + royalQueenStorage;
 
-                    Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);    // 마우스 클릭한 부분의 실제 맵 위치 가져오기
-                    Instantiate(prefabHoney, mousePosition, Quaternion.identity);                   // 꿀 획득 이미지 생성
+                    Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    Instantiate(prefabHoney, mousePosition, Quaternion.identity);
                 }
             }
         }
@@ -210,22 +228,22 @@ public class GameManager : MonoBehaviour
     // 상단 재화 표시 업데이트
     void ShowHoney()
     {
-        if (honey == 0)                                                     // 보유한 꿀 개수가 0개인지 확인
+        if (honey == 0)
         {
-            HoneyText.text = "0";                                         // 꿀 0 개로 표시
+            HoneyText.text = "0";
         }
         else
         {
-            HoneyText.text = DivideNumber(honey);              // 보유한 꿀 개수 표시
+            HoneyText.text = DivideNumber(honey);
         }
 
-        if (royalJelly == 0)                                                // 보유한 로얄젤리 개수가 0개인지 확인
+        if (royalJelly == 0)
         {
-            RoyalJellyText.text = "0";                                    // 로얄젤리 0 개로 표시
+            RoyalJellyText.text = "0";
         }
         else
         {
-            RoyalJellyText.text = DivideNumber(royalJelly);    // 보유한 로얄젤리 개수 표시
+            RoyalJellyText.text = DivideNumber(royalJelly);
         }
         temperatureText.text = temperature + "℃";
     }
@@ -233,82 +251,82 @@ public class GameManager : MonoBehaviour
     // 여왕벌 체력 관련 표시 업데이트
     void UpdateQueenHealthText()
     {
-        queenHealthLevel.text = "Lv." + queenHealth;             // 여왕벌 체력 강화량 표시
-        queenHealthText.text = DivideNumber(queenHealthPrice);   // 여왕벌 체력 강화 가격 표시 숫자
+        queenHealthLevel.text = "Lv." + queenHealth;
+        queenHealthText.text = DivideNumber(queenHealthPrice);
     }
 
     // 여왕벌 체력 강화 진행
     public void UpgradeQueenHealth()
     {
-        if (honey >= queenHealthPrice)              // 여왕벌 체력 강화할 꿀이 충분히 있는지 확인
+        if (honey >= queenHealthPrice)
         {
-            honey -= queenHealthPrice;              // 여왕벌 체력 강화 금액만큼 꿀 차감
-            queenHealth += 1;                       // 여왕벌 체력 강화
-            queenHealthPrice += queenHealth * upgradeGraph;    // 여왕벌 체력 강화 비용 증가
+            honey -= queenHealthPrice;
+            queenHealth += 1;
+            queenHealthPrice += queenHealth * upgradeGraph;
         }
     }
 
     // 여왕벌 체력 버튼 활성화
     void QueenHealthButtonActiveCheck()
     {
-        if (honey >= queenHealthPrice)              // 여왕벌 체력 강화할 꿀이 충분히 있는지 확인
+        if (honey >= queenHealthPrice)
         {
-            queenHealthBtn.interactable = true;     // 여왕벌 강화하기 버튼 활성화
+            queenHealthBtn.interactable = true;
         }
         else
         {
-            queenHealthBtn.interactable = false;    // 여왕벌 강화하기 버튼 비활성화
+            queenHealthBtn.interactable = false;
         }
     }
 
     // 여왕벌 꿀주머니 관련 표시 업데이트
     void UpdateQueenStorageText()
     {
-        queenStorageLevel.text = "Lv." + queenStorage;             // 여왕벌 꿀주머니 강화량 표시
-        queenStorageText.text = DivideNumber(queenStoragePrice);   // 여왕벌 꿀주머니 강화 가격 표시 숫자
+        queenStorageLevel.text = "Lv." + queenStorage;
+        queenStorageText.text = DivideNumber(queenStoragePrice);
     }
 
     // 여왕벌 꿀주머니 강화 진행
     public void UpgradeQueenStorage()
     {
-        if (honey >= queenStoragePrice)              // 여왕벌 꿀주머니 강화할 꿀이 충분히 있는지 확인
+        if (honey >= queenStoragePrice)
         {
-            honey -= queenStoragePrice;              // 여왕벌 꿀주머니 강화 금액만큼 꿀 차감
-            queenStorage += 1;                       // 여왕벌 꿀주머니 강화
-            queenStoragePrice += queenStorage * upgradeGraph;    // 여왕벌 꿀주머니 강화 비용 증가
+            honey -= queenStoragePrice;
+            queenStorage += 1;
+            queenStoragePrice += queenStorage * upgradeGraph;
         }
     }
 
     // 여왕벌 꿀주머니 버튼 활성화
     void QueenStorageButtonActiveCheck()
     {
-        if (honey >= queenStoragePrice)              // 여왕벌 꿀주머니 강화할 꿀이 충분히 있는지 확인
+        if (honey >= queenStoragePrice)
         {
-            queenStorageBtn.interactable = true;     // 여왕벌 강화하기 버튼 활성화
+            queenStorageBtn.interactable = true;
         }
         else
         {
-            queenStorageBtn.interactable = false;    // 여왕벌 강화하기 버튼 비활성화
+            queenStorageBtn.interactable = false;
         }
     }
 
     // 벌집 관련 표시 업데이트
     void UpdateHoneyCombText()
     {
-        honeyCombLevel.text = "Lv." + honeyComb;             // 벌집 강화량 표시
-        honeyCombText.text = DivideNumber(honeyCombPrice);   // 벌집 강화 가격 표시 숫자
+        honeyCombLevel.text = "Lv." + honeyComb;
+        honeyCombText.text = DivideNumber(honeyCombPrice);
     }
 
     // 벌집 강화 진행
     public void UpgradeHoneyComb()
     {
-        if (honey >= honeyCombPrice)            // 벌집 강화할 꿀이 충분히 있는지 확인
+        if (honey >= honeyCombPrice)
         {
-            honey -= honeyCombPrice;            // 벌집 강화 금액만큼 꿀 차감
-            honeyComb += 1;                     // 벌집 강화
-            honeyCombPrice += honeyComb * combGraph;   // 벌집 강화 비용 증가
+            honey -= honeyCombPrice;
+            honeyComb += 1;
+            honeyCombPrice += honeyComb * combGraph;
 
-            CreateHoneyComb();                  //벌집 생성
+            CreateHoneyComb();
             if(honeyComb%5 == 0 && honeyComb > 14)
             {
                 CreateHoneyCombBG();
@@ -319,26 +337,27 @@ public class GameManager : MonoBehaviour
     // 벌집 강화 버튼 활성화
     void HoneyCombButtonActiveCheck()
     {
-        if (honey >= honeyCombPrice)              // 벌집 강화할 꿀이 충분히 있는지 확인
+        if (honey >= honeyCombPrice)
         {
-            honeyCombBtn.interactable = true;     // 벌집 강화하기 버튼 활성화
+            honeyCombBtn.interactable = true;
         }
         else
         {
-            honeyCombBtn.interactable = false;    // 벌집 강화하기 버튼 비활성화
+            honeyCombBtn.interactable = false;
         }
     }
 
     // 벌집 생성
     void CreateHoneyComb()
     {
-        Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;                                                                        // 초기 벌집 X, Y 좌표값 가져오기
-        float spotX = honeyCombSpot.x + ((honeyComb - 1) % honeyCombWidth) * honeyCombX;                                                                // 생성할 벌집 X 좌표값 계산
-        float spotY = honeyCombSpot.y - ((honeyComb - 1) / honeyCombWidth) * honeyCombY - (((honeyComb - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);  // 생성할 벌집 Y 좌표값 계산
+        Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
+        float spotX = honeyCombSpot.x + ((honeyComb - 1) % honeyCombWidth) * honeyCombX;
+        float spotY = honeyCombSpot.y - ((honeyComb - 1) / honeyCombWidth) * honeyCombY - (((honeyComb - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);
 
-        Instantiate(prefabHoneyComb, new Vector2(spotX, spotY), Quaternion.identity);                                                                   // 복사해놓은 벌집 이미지 생성
+        Instantiate(prefabHoneyComb, new Vector2(spotX, spotY), Quaternion.identity);
     }
 
+    // 배경 화면 부족 시 벌집 배경 생성
     void CreateHoneyCombBG()
     {
         Vector2 honeyCombBGSpot = GameObject.Find("honeycombBackground").transform.position;
@@ -357,274 +376,275 @@ public class GameManager : MonoBehaviour
     // 일벌 체력 관련 표시 업데이트
     void UpdateBeeHealthText()
     {
-        beeHealthLevel.text = "Lv." + beeWork.beeHealth;             // 일벌 체력 강화량 표시
-        beeHealthText.text = DivideNumber(beeHealthPrice);   // 일벌 체력 강화 가격 표시 숫자 + 뒷글자
+        beeHealthLevel.text = "Lv." + beeWork.beeHealth;
+        beeHealthText.text = DivideNumber(beeHealthPrice);
     }
 
     // 일벌 체력 강화 진행
     public void UpgradeBeeHealth()
     {
-        if (honey >= beeHealthPrice)              // 일벌 체력 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeHealthPrice)
         {
-            honey -= beeHealthPrice;              // 일벌 체력 강화 금액만큼 꿀 차감
-            beeWork.beeHealth += 1;                       // 일벌 체력 강화
-            beeHealthPrice += beeWork.beeHealth * upgradeGraph;    // 일벌 체력 강화 비용 증가
+            honey -= beeHealthPrice;
+            beeWork.beeHealth += 1;
+            beeHealthPrice += beeWork.beeHealth * upgradeGraph;
         }
     }
 
     // 일벌 체력 버튼 활성화
     void BeeHealthButtonActiveCheck()
     {
-        if (honey >= beeHealthPrice)              // 일벌 체력 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeHealthPrice)
         {
-            beeHealthBtn.interactable = true;     // 일벌 강화하기 버튼 활성화
+            beeHealthBtn.interactable = true;
         }
         else
         {
-            beeHealthBtn.interactable = false;    // 일벌 강화하기 버튼 비활성화
+            beeHealthBtn.interactable = false;
         }
     }
 
     // 일벌 꿀주머니 관련 표시 업데이트
     void UpdateBeeStorageText()
     {
-        beeStorageLevel.text = "Lv." + beeWork.beeStorage;             // 일벌 꿀주머니 강화량 표시
-        beeStorageText.text = DivideNumber(beeStoragePrice);   // 일벌 꿀주머니 강화 가격 표시 숫자 + 뒷글자
+        beeStorageLevel.text = "Lv." + beeWork.beeStorage;
+        beeStorageText.text = DivideNumber(beeStoragePrice);
     }
 
     // 일벌 꿀주머니 강화 진행
     public void UpgradeBeeStorage()
     {
-        if (honey >= beeStoragePrice)              // 일벌 꿀주머니 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeStoragePrice)
         {
-            honey -= beeStoragePrice;              // 일벌 꿀주머니 강화 금액만큼 꿀 차감
-            beeWork.beeStorage += 1;                       // 일벌 꿀주머니 강화
-            beeStoragePrice += beeWork.beeStorage * upgradeGraph;    // 일벌 꿀주머니 강화 비용 증가
+            honey -= beeStoragePrice;
+            beeWork.beeStorage += 1;
+            beeStoragePrice += beeWork.beeStorage * upgradeGraph;
         }
     }
 
     // 일벌 꿀주머니 버튼 활성화
     void BeeStorageButtonActiveCheck()
     {
-        if (honey >= beeStoragePrice)              // 일벌 꿀주머니 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeStoragePrice)
         {
-            beeStorageBtn.interactable = true;     // 일벌 강화하기 버튼 활성화
+            beeStorageBtn.interactable = true;
         }
         else
         {
-            beeStorageBtn.interactable = false;    // 일벌 강화하기 버튼 비활성화
+            beeStorageBtn.interactable = false;
         }
     }
     
     // 일벌 속도 관련 표시 업데이트
     void UpdateBeeSpeedText()
     {
-        beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;             // 일벌 속도 강화량 표시
-        beeSpeedText.text = DivideNumber(beeSpeedPrice);   // 일벌 속도 강화 가격 표시 숫자 + 뒷글자
+        beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;
+        beeSpeedText.text = DivideNumber(beeSpeedPrice);
     }
 
     // 일벌 속도 강화 진행
     public void UpgradeBeeSpeed()
     {
-        if (honey >= beeSpeedPrice)              // 일벌 속도 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeSpeedPrice)
         {
-            honey -= beeSpeedPrice;              // 일벌 속도 강화 금액만큼 꿀 차감
-            beeWork.beeSpeed += 1;                       // 일벌 속도 강화
-            beeSpeedPrice += beeWork.beeSpeed * speedGraph;    // 일벌 속도 강화 비용 증가
+            honey -= beeSpeedPrice;
+            beeWork.beeSpeed += 1;
+            beeSpeedPrice += beeWork.beeSpeed * speedGraph;
         }
     }
 
     // 일벌 속도 버튼 활성화
     void BeeSpeedButtonActiveCheck()
     {
-        if (honey >= beeSpeedPrice && beeWork.beeSpeed < 50)              // 일벌 속도 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeSpeedPrice && beeWork.beeSpeed < 50)
         {
-            beeSpeedBtn.interactable = true;     // 일벌 속도 버튼 활성화
+            beeSpeedBtn.interactable = true;
         }
         else
         {
-            beeSpeedBtn.interactable = false;    // 일벌 속도 버튼 비활성화
+            beeSpeedBtn.interactable = false;
         }
     }
 
     // 일벌 수 관련 표시 업데이트
     void UpdateBeeCountText()
     {
-        beeCountLevel.text = "Lv." + beeCount;                 // 일벌 수 강화량 표시
-        beeCountText.text = DivideNumber(beeCountPrice);     // 일벌 수 강화 가격 표시 숫자 + 뒷글자
+        beeCountLevel.text = "Lv." + beeCount;
+        beeCountText.text = DivideNumber(beeCountPrice);
     }
 
     // 일벌 수 강화 진행
     public void UpgradeBeeCount()
     {
-        if (honey >= beeCountPrice && beeCount < honeyComb)            // 일벌 수 강화할 꿀이 충분히 있는지 확인
+        if (honey >= beeCountPrice && beeCount < honeyComb)
         {
-            honey -= beeCountPrice;            // 일벌 수 강화 금액만큼 꿀 차감
-            beeCount += 1;                     // 일벌 수 강화
-            beeCountPrice += beeCount * beeGraph;   // 일벌 수 강화 비용 증가
+            honey -= beeCountPrice;
+            beeCount += 1;
+            beeCountPrice += beeCount * beeGraph;
 
-            CreateBeeCount();                  //일벌 생성
+            CreateBeeCount();
         }
     }
 
     // 일벌 수 증가 버튼 활성화
     void BeeCountButtonActiveCheck()
     {
-        if (honey >= beeCountPrice && beeCount < honeyComb)              // 일벌 수 강화할 꿀이 충분히 있는지와 일벌이 생성될 벌집이 있는지 확인
+        if (honey >= beeCountPrice && beeCount < honeyComb)
         {
-            beeCountBtn.interactable = true;     // 일벌 수 강화하기 버튼 활성화
+            beeCountBtn.interactable = true;
         }
         else
         {
-            beeCountBtn.interactable = false;    // 일벌 수 강화하기 버튼 비활성화
+            beeCountBtn.interactable = false;
         }
     }
 
     // 일벌 생성
     void CreateBeeCount()
     {
-        Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;                                                                        // 초기 벌집 X, Y 좌표값 가져오기
-        float spotX = honeyCombSpot.x + ((beeCount - 1) % honeyCombWidth) * honeyCombX;                                                                 // 생성할 일벌 X 좌표값 계산
-        float spotY = honeyCombSpot.y - ((beeCount - 1) / honeyCombWidth) * honeyCombY - (((beeCount - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);    // 생성할 일벌 Y 좌표값 계산
+        Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
+        float spotX = honeyCombSpot.x + ((beeCount - 1) % honeyCombWidth) * honeyCombX;
+        float spotY = honeyCombSpot.y - ((beeCount - 1) / honeyCombWidth) * honeyCombY - (((beeCount - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);
 
 
         GameObject prefabBee = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/" + Bee + ".prefab", typeof(GameObject));
-        Instantiate(prefabBee, new Vector2(spotX, spotY), Quaternion.identity);                                                                         // 복사해놓은 일벌 이미지 생성
+        Instantiate(prefabBee, new Vector2(spotX, spotY), Quaternion.identity);
     }
 
     // 로얄젤리 여왕벌 체력 관련 표시 업데이트
     void UpdateRoyalQueenHealthText()
     {
-        royalQueenHealthLevel.text = "Lv." + royalQueenHealth;             // 여왕벌 체력 강화량 표시
-        royalQueenHealthText.text = DivideNumber(royalQueenHealthPrice);   // 여왕벌 체력 강화 가격 표시 숫자 + 뒷글자
+        royalQueenHealthLevel.text = "Lv." + royalQueenHealth;
+        royalQueenHealthText.text = DivideNumber(royalQueenHealthPrice);
     }
 
     // 로얄젤리 여왕벌 체력 강화 진행
     public void UpgradeRoyalQueenHealth()
     {
-        if (royalJelly >= royalQueenHealthPrice)              // 여왕벌 체력 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalQueenHealthPrice)
         {
-            royalJelly -= royalQueenHealthPrice;              // 여왕벌 체력 강화 금액만큼 꿀 차감
-            royalQueenHealth += 1;                       // 여왕벌 체력 강화
-            royalQueenHealthPrice += royalQueenHealth * upgradeGraph;    // 여왕벌 체력 강화 비용 증가
+            royalJelly -= royalQueenHealthPrice;
+            royalQueenHealth += 1;
+            royalQueenHealthPrice += royalQueenHealth * upgradeGraph;
         }
     }
 
     // 로얄젤리 여왕벌 체력 버튼 활성화
     void RoyalQueenHealthButtonActiveCheck()
     {
-        if (royalJelly >= royalQueenHealthPrice)              // 여왕벌 체력 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalQueenHealthPrice)
         {
-            royalQueenHealthBtn.interactable = true;     // 여왕벌 강화하기 버튼 활성화
+            royalQueenHealthBtn.interactable = true;
         }
         else
         {
-            royalQueenHealthBtn.interactable = false;    // 여왕벌 강화하기 버튼 비활성화
+            royalQueenHealthBtn.interactable = false;
         }
     }
 
     // 로얄젤리 여왕벌 꿀주머니 관련 표시 업데이트
     void UpdateRoyalQueenStorageText()
     {
-        royalQueenStorageLevel.text = "Lv." + royalQueenStorage;             // 여왕벌 꿀주머니 강화량 표시
-        royalQueenStorageText.text = DivideNumber(royalQueenStoragePrice);   // 여왕벌 꿀주머니 강화 가격 표시 숫자 + 뒷글자
+        royalQueenStorageLevel.text = "Lv." + royalQueenStorage;
+        royalQueenStorageText.text = DivideNumber(royalQueenStoragePrice);
     }
 
     // 로얄젤리 여왕벌 꿀주머니 강화 진행
     public void UpgradeRoyalQueenStorage()
     {
-        if (royalJelly >= royalQueenStoragePrice)              // 여왕벌 꿀주머니 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalQueenStoragePrice)
         {
-            royalJelly -= royalQueenStoragePrice;              // 여왕벌 꿀주머니 강화 금액만큼 꿀 차감
-            royalQueenStorage += 1;                       // 여왕벌 꿀주머니 강화
-            royalQueenStoragePrice += royalQueenStorage * upgradeGraph;    // 여왕벌 꿀주머니 강화 비용 증가
+            royalJelly -= royalQueenStoragePrice;
+            royalQueenStorage += 1;
+            royalQueenStoragePrice += royalQueenStorage * upgradeGraph;
         }
     }
 
     // 로얄젤리 여왕벌 꿀주머니 버튼 활성화
     void  RoyalQueenStorageButtonActiveCheck()
     {
-        if (royalJelly >= royalQueenStoragePrice)              // 여왕벌 꿀주머니 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalQueenStoragePrice)
         {
-            royalQueenStorageBtn.interactable = true;     // 여왕벌 강화하기 버튼 활성화
+            royalQueenStorageBtn.interactable = true;
         }
         else
         {
-            royalQueenStorageBtn.interactable = false;    // 여왕벌 강화하기 버튼 비활성화
+            royalQueenStorageBtn.interactable = false;
         }
     }
 
     // 로얄젤리 일벌 체력 관련 표시 업데이트
     void UpdateRoyalBeeHealthText()
     {
-        royalBeeHealthLevel.text = "Lv." + beeWork.royalBeeHealth;             // 일벌 체력 강화량 표시
-        royalBeeHealthText.text = DivideNumber(royalBeeHealthPrice);   // 일벌 체력 강화 가격 표시 숫자 + 뒷글자
+        royalBeeHealthLevel.text = "Lv." + beeWork.royalBeeHealth;
+        royalBeeHealthText.text = DivideNumber(royalBeeHealthPrice);
     }
 
     // 로얄젤리 일벌 체력 강화 진행
     public void UpgradeRoyalBeeHealth()
     {
-        if (royalJelly >= royalBeeHealthPrice)              // 일벌 체력 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalBeeHealthPrice)
         {
-            royalJelly -= royalBeeHealthPrice;              // 일벌 체력 강화 금액만큼 꿀 차감
-            beeWork.royalBeeHealth += 1;                       // 일벌 체력 강화
-            royalBeeHealthPrice += beeWork.royalBeeHealth * upgradeGraph;    // 일벌 체력 강화 비용 증가
+            royalJelly -= royalBeeHealthPrice;
+            beeWork.royalBeeHealth += 1;
+            royalBeeHealthPrice += beeWork.royalBeeHealth * upgradeGraph;
         }
     }
 
     // 로얄젤리 일벌 체력 버튼 활성화
     void RoyalBeeHealthButtonActiveCheck()
     {
-        if (royalJelly >= royalBeeHealthPrice)              // 일벌 체력 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalBeeHealthPrice)
         {
-            royalBeeHealthBtn.interactable = true;     // 일벌 강화하기 버튼 활성화
+            royalBeeHealthBtn.interactable = true;
         }
         else
         {
-            royalBeeHealthBtn.interactable = false;    // 일벌 강화하기 버튼 비활성화
+            royalBeeHealthBtn.interactable = false;
         }
     }
 
     // 로얄젤리 일벌 꿀주머니 관련 표시 업데이트
     void UpdateRoyalBeeStorageText()
     {
-        royalBeeStorageLevel.text = "Lv." + beeWork.royalBeeStorage;             // 일벌 꿀주머니 강화량 표시
-        royalBeeStorageText.text = DivideNumber(royalBeeStoragePrice);   // 일벌 꿀주머니 강화 가격 표시 숫자 + 뒷글자
+        royalBeeStorageLevel.text = "Lv." + beeWork.royalBeeStorage;
+        royalBeeStorageText.text = DivideNumber(royalBeeStoragePrice);
     }
 
     // 로얄젤리 일벌 꿀주머니 강화 진행
     public void UpgradeRoyalBeeStorage()
     {
-        if (royalJelly >= royalBeeStoragePrice)              // 일벌 꿀주머니 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalBeeStoragePrice)
         {
-            royalJelly -= royalBeeStoragePrice;              // 일벌 꿀주머니 강화 금액만큼 꿀 차감
-            beeWork.royalBeeStorage += 1;                       // 일벌 꿀주머니 강화
-            royalBeeStoragePrice += beeWork.royalBeeStorage * upgradeGraph;    // 일벌 꿀주머니 강화 비용 증가
+            royalJelly -= royalBeeStoragePrice;
+            beeWork.royalBeeStorage += 1;
+            royalBeeStoragePrice += beeWork.royalBeeStorage * upgradeGraph;
         }
     }
 
     // 로얄젤리 일벌 꿀주머니 버튼 활성화
     void RoyalBeeStorageButtonActiveCheck()
     {
-        if (royalJelly >= royalBeeStoragePrice)              // 일벌 꿀주머니 강화할 로얄젤리가 충분히 있는지 확인
+        if (royalJelly >= royalBeeStoragePrice)
         {
-            royalBeeStorageBtn.interactable = true;     // 일벌 강화하기 버튼 활성화
+            royalBeeStorageBtn.interactable = true;
         }
         else
         {
-            royalBeeStorageBtn.interactable = false;    // 일벌 강화하기 버튼 비활성화
+            royalBeeStorageBtn.interactable = false;
         }
     }
 
+    // 분봉하기 버튼 활성화
     void SwarmingButtonActiveCheck()
     {
-        if (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage >= 100)              // 일벌 꿀주머니 강화할 로얄젤리가 충분히 있는지 확인
+        if (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage >= 100)
         {
-            swarmingBtn.interactable = true;     // 일벌 강화하기 버튼 활성화
+            swarmingBtn.interactable = true;
         }
         else
         {
-            swarmingBtn.interactable = false;    // 일벌 강화하기 버튼 비활성화
+            swarmingBtn.interactable = false;
         }
     }
 
@@ -667,6 +687,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // 진행 내역 저장하기
     void Save()
     {
         SaveData saveData = new SaveData();
@@ -715,6 +736,7 @@ public class GameManager : MonoBehaviour
         XmlManager.XmlSave<SaveData>(saveData, path);
     }
 
+    // 저장 내역 불러오기
     void Load()
     {
         SaveData saveData = new SaveData();
@@ -763,6 +785,7 @@ public class GameManager : MonoBehaviour
         MapManager.mapSkinList = saveData.mapSkinList;
     }
 
+    // 저장 내역에 맞게 벌집 생성
     void FillHoneyComb()
     {
         GameObject[] honeycombs = GameObject.FindGameObjectsWithTag("honeycomb");
@@ -771,15 +794,16 @@ public class GameManager : MonoBehaviour
         {
             for (int i = honeycombs.Length; i < honeyComb; i++)
             {
-                Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;                                                                        // 초기 벌집 X, Y 좌표값 가져오기
-                float spotX = honeyCombSpot.x + (i % honeyCombWidth) * honeyCombX;                                                                // 생성할 벌집 X 좌표값 계산
-                float spotY = honeyCombSpot.y - (i / honeyCombWidth) * honeyCombY - ((i % honeyCombWidth) % 2) * (honeyCombY / 2);  // 생성할 벌집 Y 좌표값 계산
+                Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
+                float spotX = honeyCombSpot.x + (i % honeyCombWidth) * honeyCombX;
+                float spotY = honeyCombSpot.y - (i / honeyCombWidth) * honeyCombY - ((i % honeyCombWidth) % 2) * (honeyCombY / 2);
 
-                Instantiate(prefabHoneyComb, new Vector2(spotX, spotY), Quaternion.identity);                                                                   // 복사해놓은 벌집 이미지 생성
+                Instantiate(prefabHoneyComb, new Vector2(spotX, spotY), Quaternion.identity);
             }
         }
     }
 
+    // 저장내역에 맞게 벌집 배경 생성
     void FillHoneyCombBG()
     {
         GameObject[] honeycombBGs = GameObject.FindGameObjectsWithTag("honeycombBackground");
@@ -788,11 +812,11 @@ public class GameManager : MonoBehaviour
         {
             for (int i = honeycombBGs.Length; i <= honeyComb / 5 || i < 3; i++)
             {
-                Vector2 honeyCombBGSpot = GameObject.Find("honeycombBackground").transform.position;  // 초기 벌집 X, Y 좌표값 가져오기
-                float spotX = honeyCombBGSpot.x;                                                             // 생성할 벌집 X 좌표값 계산
-                float spotY = honeyCombBGSpot.y - (1.2f * i);  // 생성할 벌집 Y 좌표값 계산
+                Vector2 honeyCombBGSpot = GameObject.Find("honeycombBackground").transform.position;
+                float spotX = honeyCombBGSpot.x;
+                float spotY = honeyCombBGSpot.y - (1.2f * i);
 
-                Instantiate(prefabHoneyCombBG, new Vector2(spotX, spotY), Quaternion.identity);                                                                   // 복사해놓은 벌집 이미지 생성
+                Instantiate(prefabHoneyCombBG, new Vector2(spotX, spotY), Quaternion.identity);
                 if(i > 2)
                 {
                     mainCameraDrag.mainLimitMinY -= 1.2f;
@@ -803,6 +827,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // 저장내역에 맞게 일벌 생성
     void FillBee()
     {
         GameObject[] bees = GameObject.FindGameObjectsWithTag("bee");
@@ -813,10 +838,11 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < beeCount; i++)
         {
-            StartCoroutine(BeeDelay(i));                                                                        // 복사해놓은 일벌 이미지 생성
+            StartCoroutine(BeeDelay(i));
         }
     }
 
+    // 스킨 변경시 일벌 스킨 적용 후 재생성
     public void ChangeBee()
     {
         if (Bee != SkinManager.Bee)
@@ -826,6 +852,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // 일벌이 일하러 날아가는 타이밍 조절
     IEnumerator BeeDelay(int i)
     {
         GameObject prefabBeeStop = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/beeStop.prefab", typeof(GameObject));
@@ -833,9 +860,9 @@ public class GameManager : MonoBehaviour
 
         GameObject prefabBee = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/" + Bee + ".prefab", typeof(GameObject));
 
-        Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;                                                                        // 초기 벌집 X, Y 좌표값 가져오기
-        float spotX = honeyCombSpot.x + (i % honeyCombWidth) * honeyCombX;                                                                 // 생성할 일벌 X 좌표값 계산
-        float spotY = honeyCombSpot.y - (i / honeyCombWidth) * honeyCombY - ((i % honeyCombWidth) % 2) * (honeyCombY / 2);    // 생성할 일벌 Y 좌표값 계산
+        Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
+        float spotX = honeyCombSpot.x + (i % honeyCombWidth) * honeyCombX;
+        float spotY = honeyCombSpot.y - (i / honeyCombWidth) * honeyCombY - ((i % honeyCombWidth) % 2) * (honeyCombY / 2);
 
         GameObject Beestop = Instantiate(prefabBeeStop, new Vector2(spotX, spotY), Quaternion.identity);
 
@@ -856,6 +883,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // 여왕 선택 스킨 적용
     public void QueenSkinSelect()
     {
         float spotX = queenSpot.x;
@@ -871,6 +899,7 @@ public class GameManager : MonoBehaviour
         Instantiate(prefabQueen, new Vector2(spotX, spotY), Quaternion.identity);
     }
 
+    // 맵 선택 스킨 적용
     public void MapSelect()
     {
         backgroundImage.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/background/background" + Map + ".jpg", typeof(Sprite));
@@ -892,6 +921,7 @@ public class GameManager : MonoBehaviour
         minTemp = MapManager.minTempList[skinNum];
     }
 
+    // 저장 내역에 맞게 스킨 페이지 밎 맵 페이지 구매내역 적용
     void SettingSkin()
     {
         GameObject[] skinList = GameObject.FindGameObjectsWithTag("queenSkin");
@@ -948,7 +978,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-
+    // 숫자가 천단위 기준으로 반올림하여 문자로 축약 계산
     string DivideNumber(long num)
     {
         long divineNum = num;
