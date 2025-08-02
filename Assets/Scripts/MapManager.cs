@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class MapManager : MonoBehaviour
 {
@@ -38,14 +37,7 @@ public class MapManager : MonoBehaviour
     // 현재 보유한 로얄 젤리 개수 업데이트
     void ShowJelly()
     {
-        if (GameManager.royalJelly == 0)
-        {
-            RoyalJellyText.text = "0";
-        }
-        else
-        {
-            RoyalJellyText.text = DivideNumber(GameManager.royalJelly);
-        }
+        RoyalJellyText.text = DivideNumber(GameManager.royalJelly);
     }
 
     // 맵 스킨 선택
@@ -57,9 +49,10 @@ public class MapManager : MonoBehaviour
 
         int skinNum = 0;
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
-        for (int i = 1; i < btnList.Length; i++)
+        List<GameObject> sortedbtnList = btnList.OrderBy(go => go.transform.position.y).ToList();
+        for (int i = 1; i < sortedbtnList.Count; i++)
         {
-            string check = btnList[i].GetComponent<SpriteRenderer>().name;
+            string check = sortedbtnList[i].GetComponent<SpriteRenderer>().name;
 
             if (check == skinName)
             {
@@ -77,9 +70,10 @@ public class MapManager : MonoBehaviour
         int skinNum = 0;
 
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
-        for (int i = 1; i < btnList.Length; i++)
+        List<GameObject> sortedbtnList = btnList.OrderBy(go => go.transform.position.y).ToList();
+        for (int i = 1; i < sortedbtnList.Count; i++)
         {
-            string check = btnList[i].GetComponent<SpriteRenderer>().name;
+            string check = sortedbtnList[i].GetComponent<SpriteRenderer>().name;
 
             if (check == skinName)
             {
@@ -107,10 +101,10 @@ public class MapManager : MonoBehaviour
     void ShowSkinTemperature()
     {
         GameObject[] imageList = GameObject.FindGameObjectsWithTag("tempBottle");
-
-        for (int i = 0; i < imageList.Length; i++)
+        List<GameObject> sortedimageList = imageList.OrderBy(go => go.transform.position.y).ToList();
+        for (int i = 0; i < sortedimageList.Count; i++)
         {
-            Transform bottleText = imageList[i].transform.Find("Text");
+            Transform bottleText = sortedimageList[i].transform.Find("Text");
             bottleText.GameObject().GetComponent<Text>().text = minTempList[i] + " ~ " + maxTempList[i];
 
         }
@@ -120,12 +114,12 @@ public class MapManager : MonoBehaviour
     void ShowSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
-
-        for (int i = 1; i < btnList.Length; i++)
+        List<GameObject> sortedbtnList = btnList.OrderBy(go => go.transform.position.y).ToList();
+        for (int i = 1; i < sortedbtnList.Count; i++)
         {
             if (!mapSkinList[i])
             {
-                Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buyMap");
+                Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buyMap");
                 buyBtn.Find("Text").GameObject().GetComponent<Text>().text = DivideNumber(mapSkinPriceList[i]);
             }
         }
@@ -135,22 +129,23 @@ public class MapManager : MonoBehaviour
     void ActiveSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
+        List<GameObject> sortedbtnList = btnList.OrderBy(go => go.transform.position.y).ToList();
         Color color = new Color32(112, 59, 0, 255);
 
-        for (int i = 1; i < btnList.Length; i++)
+        for (int i = 1; i < sortedbtnList.Count; i++)
         {
             if (!mapSkinList[i])
             {
                 if (GameManager.royalJelly < mapSkinPriceList[i])
                 {
-                    Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buyMap");
+                    Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buyMap");
                     Image image = buyBtn.Find("Image").GetComponent<Image>();
                     image.sprite = jellyLockImg;
                     buyBtn.Find("Text").GameObject().GetComponent<Text>().color = Color.grey;
                 }
                 else
                 {
-                    Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buyMap");
+                    Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buyMap");
 
                     Image image = buyBtn.Find("Image").GetComponent<Image>();
                     image.sprite = jellyImg;

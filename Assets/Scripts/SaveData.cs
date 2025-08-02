@@ -5,6 +5,7 @@ public class SaveData
     public long honey;
 
     public float temperature;
+    public float temperatureChange;
 
     public long queenHealth;
     public long queenHealthPrice;
@@ -43,4 +44,6 @@ public class SaveData
     public bool[] queenSkinList = { true, false, false, false, false, false, false, false, false, false, false };
 
     public bool[] beeSkinList = { true, false, false, false, false, false, false, false, false, false, false };
+
+    public string lastPlayTime;
 }

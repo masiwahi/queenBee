@@ -1,18 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
-    public static long royalJelly = 100000;      // 환생(분봉) 재화
-    public static long honey = 100000;           // 기본 재화
+    public static long royalJelly = 0;      // 환생(분봉) 재화
+    public static long honey = 0;           // 기본 재화
 
-    public static float temperature = 1f;   // 온도(온도에 따라 활동기가 있음)
-    public float temperatureChange = 0.5f;  // 온도 변화량
+    public static float temperature = 10f;   // 온도(온도에 따라 활동기가 있음)
+    public float temperatureChange = -0.5f;  // 온도 변화량
     public static float minTemp = -5f;      // 최저 온도
     public static float maxTemp = 15f;      // 최고 온도
 
@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour
     public long royalQueenStoragePrice;     // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
     public long royalBeeHealthPrice;        // 일벌(오토) 체력이 강화 비용
     public long royalBeeStoragePrice;       // 일벌(오토) 꿀주머니(저장공간) 강화 비용
+
+    public string lastPlayTime;
+
 
     public Text HoneyText;                  // 꿀벌 양 체크하는 글씨
     public Text RoyalJellyText;             // 로얄젤리 양 확인하는 글씨
@@ -100,17 +103,30 @@ public class GameManager : MonoBehaviour
     public GameObject backgroundImage;      // 배경 스킨 이미지
     public GameObject hiveImage;            // 벌집 배경 스킨 이미지
 
-    private int upgradeGraph = 17;          // 일반 강화 상승 비율
+    private int upgradeGraph = 13;          // 일반 강화 상승 비율
     private int combGraph = 57;             // 벌집 강화 상승 비율
     private int beeGraph = 37;              // 일벌 수 강화 상승 비율
     private int speedGraph = 137;           // 일벌 속도 강화 상승 비율
+    private int maxHoneyComb;
 
     private Vector2 queenSpot;              // 여왕 복귀 지점
     public GameObject tutorial;             // 튜토리얼 표시 화면
 
+    public GameObject rewardPanel;
+    public Text alertText;
+    public Text rewardText;
+    public GameObject exitGamePanel;
+
+    public GameObject canvasSkin;
+    public GameObject canvasMap;
+
+    public Button skinExitBtn;
+    public Button mapExitBtn;
+
     // Start is called before the first frame update
     void Start()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         queenSpot = GameObject.FindGameObjectWithTag("queen").transform.position;
         string path = Application.persistentDataPath + "/save.xml";
         if (System.IO.File.Exists(path))
@@ -119,10 +135,7 @@ public class GameManager : MonoBehaviour
             FillHoneyComb();
             FillBee();
             tutorial.SetActive(false);
-        }
-        else
-        {
-
+            AwayReward();
         }
         FillHoneyCombBG();
         SettingSkin();
@@ -167,12 +180,55 @@ public class GameManager : MonoBehaviour
         RoyalBeeStorageButtonActiveCheck();
 
         HoneyIncrease();
+
+        if (Input.GetKey("escape"))
+        {
+            GameObject[] panelList = GameObject.FindGameObjectsWithTag("upgradePanel");
+            if (canvasMap.activeSelf)
+            {
+                mapExitBtn.onClick.Invoke();
+            }
+            else if (canvasSkin.activeSelf)
+            {
+                skinExitBtn.onClick.Invoke();
+            }
+            else 
+            {
+                bool activeCount = true;
+                for(int i = 0; i < panelList.Length; i++)
+                {
+                    if (panelList[i].activeSelf)
+                    {
+                        panelList[i].SetActive(false);
+                        activeCount = false;
+                    }
+                }
+                if (activeCount)
+                {
+                    exitGamePanel.SetActive(true);
+                }
+            }
+        }
+        
+    }
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     // 게임 종료시 진행 내역 저장
     private void OnApplicationQuit()
     {
         Save();
+    }
+
+    public void addHoney()
+    {
+        honey += 10000;
+    }
+    public void addJelly()
+    {
+        royalJelly += 10000;
     }
 
     // 시간마다 온도 변화
@@ -189,62 +245,158 @@ public class GameManager : MonoBehaviour
                 temperatureChange = -0.5f;
             }
             temperature += temperatureChange;
-
+            Save();
             yield return new WaitForSeconds(5f);
         }
     }
 
     IEnumerator advertiseWork()
     {
+        yield return new WaitForSeconds(30f);
         while (true)
         {
             Instantiate(prefabAd, new Vector2(-3.5f, 3.5f), Quaternion.identity);
 
-            yield return new WaitForSeconds(50f);
+            yield return new WaitForSeconds(300f);
         }
     }
 
     // 화면 클릭 시 꿀 획득 (여왕벌이 꿀을 구해 옴)
     void HoneyIncrease()
     {
-        if (Input.GetMouseButtonDown(0))
+        foreach (Touch touch in Input.touches)
         {
-            Vector2 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Ray2D ray = new Ray2D(wp, Vector2.zero);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-            if (hit.collider != null)
+            if (touch.phase == TouchPhase.Began)
             {
-                if (temperature >= 0 && EventSystem.current.IsPointerOverGameObject() == false)
+                Vector2 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Ray2D ray = new Ray2D(wp, Vector2.zero);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                if (hit.collider != null)
                 {
-                    honey += queenHealth + queenStorage + royalQueenHealth + royalQueenStorage;
+                    if (temperature >= 0 && EventSystem.current.IsPointerOverGameObject() == false)
+                    {
+                        honey += queenHealth + queenStorage + royalQueenHealth + royalQueenStorage;
 
-                    Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    Instantiate(prefabHoney, mousePosition, Quaternion.identity);
+                        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        Instantiate(prefabHoney, mousePosition, Quaternion.identity);
+                    }
                 }
             }
         }
+    }
+    void AwayReward()
+    {
+        string[] lastTimeString = lastPlayTime.Split("/");
+        int[] lastTimeInt = new int[lastTimeString.Length];
+        for (int i = 0; i < lastTimeString.Length; i++)
+        {
+            lastTimeInt[i] = int.Parse(lastTimeString[i]);
+        }
+        if (DateTime.Now.Year > lastTimeInt[0])
+        {
+            lastTimeInt[1] -= 12;
+        }
+        if (DateTime.Now.Month > lastTimeInt[1])
+        {
+            lastTimeInt[2] -= 30;
+        }
+        if (DateTime.Now.Day > lastTimeInt[2])
+        {
+            lastTimeInt[3] -= 24;
+        }
+        if (DateTime.Now.Hour > lastTimeInt[3])
+        {
+            lastTimeInt[4] -= 60;
+        }
+
+        int emptyMinute = DateTime.Now.Minute - lastTimeInt[4];
+        int skinCount = 0;
+        for (int i = 1; i < SkinManager.queenSkinList.Length; i++)
+        {
+            if (SkinManager.queenSkinList[i])
+            {
+                skinCount++;
+            }
+        }
+        for (int i = 1; i < SkinManager.beeSkinList.Length; i++)
+        {
+            if (SkinManager.beeSkinList[i])
+            {
+                skinCount++;
+            }
+        }
+
+        if (emptyMinute > 5)
+        {
+            rewardPanel.SetActive(true);
+            if (emptyMinute > (180 + (skinCount * 30)))
+            {
+                emptyMinute = 180 + (skinCount * 30);
+            }
+            alertText.text = "오프라인 " + emptyMinute / 60 + "시간 " + emptyMinute % 60 + "분 동안\n일벌이 벌어온 보상입니다!";
+            rewardText.text = DivideNumber(emptyMinute * (beeWork.beeHealth + beeWork.beeStorage) * beeCount);
+        }
+    }
+
+    public void takeReward()
+    {
+        string[] lastTimeString = lastPlayTime.Split("/");
+        int[] lastTimeInt = new int[lastTimeString.Length];
+        for (int i = 0; i < lastTimeString.Length; i++)
+        {
+            lastTimeInt[i] = int.Parse(lastTimeString[i]);
+        }
+        if (DateTime.Now.Year > lastTimeInt[0])
+        {
+            lastTimeInt[1] -= 12;
+        }
+        if (DateTime.Now.Month > lastTimeInt[1])
+        {
+            lastTimeInt[2] -= 30;
+        }
+        if (DateTime.Now.Day > lastTimeInt[2])
+        {
+            lastTimeInt[3] -= 24;
+        }
+        if (DateTime.Now.Hour > lastTimeInt[3])
+        {
+            lastTimeInt[4] -= 60;
+        }
+
+        int emptyMinute = DateTime.Now.Minute - lastTimeInt[4];
+        int skinCount = 0;
+        for (int i = 1; i < SkinManager.queenSkinList.Length; i++)
+        {
+            if (SkinManager.queenSkinList[i])
+            {
+                skinCount++;
+            }
+        }
+        for (int i = 1; i < SkinManager.beeSkinList.Length; i++)
+        {
+            if (SkinManager.beeSkinList[i])
+            {
+                skinCount++;
+            }
+        }
+
+        if (emptyMinute > 5)
+        {
+            rewardPanel.SetActive(true);
+            if (emptyMinute > (180 + (skinCount * 30)))
+            {
+                emptyMinute = 180 + (skinCount * 30);
+            }
+            honey += emptyMinute * (beeWork.beeHealth + beeWork.beeStorage);
+        }
+        rewardPanel.SetActive(false);
     }
 
     // 상단 재화 표시 업데이트
     void ShowHoney()
     {
-        if (honey == 0)
-        {
-            HoneyText.text = "0";
-        }
-        else
-        {
-            HoneyText.text = DivideNumber(honey);
-        }
-
-        if (royalJelly == 0)
-        {
-            RoyalJellyText.text = "0";
-        }
-        else
-        {
-            RoyalJellyText.text = DivideNumber(royalJelly);
-        }
+        HoneyText.text = DivideNumber(honey);
+        RoyalJellyText.text = DivideNumber(royalJelly);
         temperatureText.text = temperature + "℃";
     }
 
@@ -313,14 +465,22 @@ public class GameManager : MonoBehaviour
     // 벌집 관련 표시 업데이트
     void UpdateHoneyCombText()
     {
-        honeyCombLevel.text = "Lv." + honeyComb;
-        honeyCombText.text = DivideNumber(honeyCombPrice);
+        if (maxHoneyComb > honeyComb)
+        {
+            honeyCombLevel.text = "Lv." + honeyComb;
+            honeyCombText.text = DivideNumber(honeyCombPrice);
+        }
+        else
+        {
+            honeyCombLevel.text = "Lv." + honeyComb;
+            honeyCombText.text = "MAX";
+        }
     }
 
     // 벌집 강화 진행
     public void UpgradeHoneyComb()
     {
-        if (honey >= honeyCombPrice)
+        if (honey >= honeyCombPrice && maxHoneyComb > honeyComb)
         {
             honey -= honeyCombPrice;
             honeyComb += 1;
@@ -337,7 +497,7 @@ public class GameManager : MonoBehaviour
     // 벌집 강화 버튼 활성화
     void HoneyCombButtonActiveCheck()
     {
-        if (honey >= honeyCombPrice)
+        if (honey >= honeyCombPrice && maxHoneyComb > honeyComb)
         {
             honeyCombBtn.interactable = true;
         }
@@ -438,8 +598,16 @@ public class GameManager : MonoBehaviour
     // 일벌 속도 관련 표시 업데이트
     void UpdateBeeSpeedText()
     {
-        beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;
-        beeSpeedText.text = DivideNumber(beeSpeedPrice);
+        if (beeWork.beeSpeed < 50)
+        {
+            beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;
+            beeSpeedText.text = DivideNumber(beeSpeedPrice);
+        }
+        else
+        {
+            beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;
+            beeSpeedText.text = "MAX";
+        }
     }
 
     // 일벌 속도 강화 진행
@@ -469,8 +637,17 @@ public class GameManager : MonoBehaviour
     // 일벌 수 관련 표시 업데이트
     void UpdateBeeCountText()
     {
-        beeCountLevel.text = "Lv." + beeCount;
-        beeCountText.text = DivideNumber(beeCountPrice);
+        if (beeCount < honeyComb)
+        {
+            beeCountLevel.text = "Lv." + beeCount;
+            beeCountText.text = DivideNumber(beeCountPrice);
+        }
+        else
+        {
+            beeCountLevel.text = "Lv." + beeCount;
+            beeCountText.text = "MAX";
+        }
+        
     }
 
     // 일벌 수 강화 진행
@@ -507,7 +684,7 @@ public class GameManager : MonoBehaviour
         float spotY = honeyCombSpot.y - ((beeCount - 1) / honeyCombWidth) * honeyCombY - (((beeCount - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);
 
 
-        GameObject prefabBee = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/" + Bee + ".prefab", typeof(GameObject));
+        GameObject prefabBee = Resources.Load<GameObject>("Prefabs/bee/" + Bee);
         Instantiate(prefabBee, new Vector2(spotX, spotY), Quaternion.identity);
     }
 
@@ -655,7 +832,7 @@ public class GameManager : MonoBehaviour
 
         if (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage >= 100)
         {
-            royalJelly += (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage - 89) / 10;
+            royalJelly += (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage) / 10;
         }
 
         queenHealth = 0;
@@ -728,9 +905,14 @@ public class GameManager : MonoBehaviour
 
         saveData.Map = Map;
 
+        saveData.temperature = temperature;
+        saveData.temperatureChange = temperatureChange;
+
         saveData.queenSkinList = SkinManager.queenSkinList;
         saveData.beeSkinList = SkinManager.beeSkinList;
         saveData.mapSkinList = MapManager.mapSkinList;
+
+        saveData.lastPlayTime = DateTime.Now.Year + "/" + DateTime.Now.Month + "/" + DateTime.Now.Day + "/" + DateTime.Now.Hour + "/" + DateTime.Now.Minute;
 
         string path = Application.persistentDataPath + "/save.xml";
         XmlManager.XmlSave<SaveData>(saveData, path);
@@ -741,7 +923,7 @@ public class GameManager : MonoBehaviour
     {
         SaveData saveData = new SaveData();
 
-        string path = Application.persistentDataPath + "/save.xml";
+        string path = UnityEngine.Application.persistentDataPath + "/save.xml";
         saveData = XmlManager.XmlLoad<SaveData>(path);
 
         royalJelly = saveData.royalJelly;
@@ -780,14 +962,28 @@ public class GameManager : MonoBehaviour
 
         Map = saveData.Map;
 
+        temperature = saveData.temperature;
+        temperatureChange = saveData.temperatureChange;
+
         SkinManager.queenSkinList = saveData.queenSkinList;
         SkinManager.beeSkinList = saveData.beeSkinList;
         MapManager.mapSkinList = saveData.mapSkinList;
+
+        lastPlayTime = saveData.lastPlayTime;
     }
 
     // 저장 내역에 맞게 벌집 생성
     void FillHoneyComb()
     {
+        maxHoneyComb = 15;
+        for (int i = 0; i < MapManager.mapSkinList.Length; i++)
+        {
+            if (MapManager.mapSkinList[i])
+            {
+                maxHoneyComb += 5;
+            }
+        }
+
         GameObject[] honeycombs = GameObject.FindGameObjectsWithTag("honeycomb");
 
         if (honeyComb != honeycombs.Length)
@@ -855,10 +1051,10 @@ public class GameManager : MonoBehaviour
     // 일벌이 일하러 날아가는 타이밍 조절
     IEnumerator BeeDelay(int i)
     {
-        GameObject prefabBeeStop = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/beeStop.prefab", typeof(GameObject));
-        prefabBeeStop.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/bee/" + Bee + "5.png", typeof(Sprite));
+        GameObject prefabBeeStop = Resources.Load<GameObject>("Prefabs/bee/beeStop");
+        prefabBeeStop.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/bee/" + Bee + "5");
 
-        GameObject prefabBee = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/" + Bee + ".prefab", typeof(GameObject));
+        GameObject prefabBee = Resources.Load<GameObject>("Prefabs/bee/" + Bee);
 
         Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
         float spotX = honeyCombSpot.x + (i % honeyCombWidth) * honeyCombX;
@@ -867,7 +1063,7 @@ public class GameManager : MonoBehaviour
         GameObject Beestop = Instantiate(prefabBeeStop, new Vector2(spotX, spotY), Quaternion.identity);
 
 
-        int rand = Random.Range(0, 11);
+        int rand = UnityEngine.Random.Range(0, 11);
 
         if(temperature < 0)
         {
@@ -892,9 +1088,9 @@ public class GameManager : MonoBehaviour
         GameObject prefabQueen = GameObject.FindGameObjectWithTag("queen");
         Destroy(prefabQueen);
 
-        prefabQueen = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/queen/" + Queen + ".prefab", typeof(GameObject));
-        queenSelectSkinImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/queen/" + Queen + "1.png", typeof(Sprite));
-        beeSelectSkinImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/bee/" + Bee + "5.png", typeof(Sprite));
+        prefabQueen = Resources.Load<GameObject>("Prefabs/queen/" + Queen);
+        queenSelectSkinImage.sprite = Resources.Load<Sprite>("Sprites/queen/" + Queen + "1");
+        beeSelectSkinImage.sprite = Resources.Load<Sprite>("Sprites/bee/" + Bee + "5");
 
         Instantiate(prefabQueen, new Vector2(spotX, spotY), Quaternion.identity);
     }
@@ -902,14 +1098,25 @@ public class GameManager : MonoBehaviour
     // 맵 선택 스킨 적용
     public void MapSelect()
     {
-        backgroundImage.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/background/background" + Map + ".jpg", typeof(Sprite));
-        hiveImage.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/hive/hive" + Map + ".png", typeof(Sprite));
+        maxHoneyComb = 15;
+        for (int i = 0; i < MapManager.mapSkinList.Length; i++)
+        {
+            if (MapManager.mapSkinList[i])
+            {
+                maxHoneyComb += 5;
+            }
+        }
+
+        backgroundImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/background/background" + Map);
+        hiveImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/hive/hive" + Map);
 
         int skinNum = 0;
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("mapSkin");
-        for (int i = 1; i < btnList.Length; i++)
+        List<GameObject> sortedbtnList = btnList.OrderBy(go => go.transform.position.y).ToList();
+
+        for (int i = 1; i < sortedbtnList.Count; i++)
         {
-            string check = btnList[i].GetComponent<SpriteRenderer>().name;
+            string check = sortedbtnList[i].GetComponent<SpriteRenderer>().name;
             check = check.Substring(3);
 
             if (check == Map)
@@ -925,53 +1132,56 @@ public class GameManager : MonoBehaviour
     void SettingSkin()
     {
         GameObject[] skinList = GameObject.FindGameObjectsWithTag("queenSkin");
+        List<GameObject> sorteSkinList = skinList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
 
         for (int i = 1; i < SkinManager.queenSkinList.Length; i++)
         {
             if (SkinManager.queenSkinList[i])
             {
-                Transform buyBtn = skinList[i].transform.Find("Canvas").Find("buySkin");
+                Transform buyBtn = sorteSkinList[i].transform.Find("Canvas").Find("buySkin");
                 buyBtn.gameObject.SetActive(false);
 
-                Transform selectBtn = skinList[i].transform.Find("Canvas").Find("selectSkin");
+                Transform selectBtn = sorteSkinList[i].transform.Find("Canvas").Find("selectSkin");
                 selectBtn.gameObject.SetActive(true);
 
-                string skinName = skinList[i].GetComponent<SpriteRenderer>().sprite.name;
+                string skinName = sorteSkinList[i].GetComponent<SpriteRenderer>().sprite.name;
                 skinName = skinName.Substring(0, skinName.Length - 4) + "1";
 
-                skinList[i].GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/queen/" + skinName + ".png", typeof(Sprite));
+                sorteSkinList[i].GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/queen/" + skinName);
             }
         }
 
         GameObject[] beeSkinList = GameObject.FindGameObjectsWithTag("beeSkin");
+        List<GameObject> sortedbeeSkinList = beeSkinList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
 
         for (int i = 1; i < SkinManager.beeSkinList.Length; i++)
         {
             if (SkinManager.beeSkinList[i])
             {
-                Transform buyBtn = beeSkinList[i].transform.Find("Canvas").Find("buySkin");
+                Transform buyBtn = sortedbeeSkinList[i].transform.Find("Canvas").Find("buySkin");
                 buyBtn.gameObject.SetActive(false);
 
-                Transform selectBtn = beeSkinList[i].transform.Find("Canvas").Find("selectSkin");
+                Transform selectBtn = sortedbeeSkinList[i].transform.Find("Canvas").Find("selectSkin");
                 selectBtn.gameObject.SetActive(true);
 
-                string skinName = beeSkinList[i].GetComponent<SpriteRenderer>().sprite.name;
+                string skinName = sortedbeeSkinList[i].GetComponent<SpriteRenderer>().sprite.name;
                 skinName = skinName.Substring(0, skinName.Length - 4) + "5";
 
-                beeSkinList[i].GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/bee/" + skinName + ".png", typeof(Sprite));
+                sortedbeeSkinList[i].GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/bee/" + skinName);
             }
         }
 
         GameObject[] mapSkinList = GameObject.FindGameObjectsWithTag("mapSkin");
+        List<GameObject> sortedmapSkinList = mapSkinList.OrderBy(go => go.transform.position.y).ToList();
 
         for (int i = 1; i < MapManager.mapSkinList.Length; i++)
         {
             if (MapManager.mapSkinList[i])
             {
-                Transform buyBtn = mapSkinList[i].transform.Find("Canvas").Find("buyMap");
+                Transform buyBtn = sortedmapSkinList[i].transform.Find("Canvas").Find("buyMap");
                 buyBtn.gameObject.SetActive(false);
 
-                Transform selectBtn = mapSkinList[i].transform.Find("Canvas").Find("selectMap");
+                Transform selectBtn = sortedmapSkinList[i].transform.Find("Canvas").Find("selectMap");
                 selectBtn.gameObject.SetActive(true);
             }
         }

@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -59,7 +57,7 @@ public class beeWork : MonoBehaviour
 
         if (transform.position == home && GameManager.temperature < 0)
         {
-            GameObject prefabBeeSleep = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/bee/beeSleep.prefab", typeof(GameObject));
+            GameObject prefabBeeSleep = Resources.Load<GameObject>("Prefabs/bee/beeSleep");
             home.y -= 0.3f;
             home.x -= 0.1f;
             Instantiate(prefabBeeSleep, home, Quaternion.identity);

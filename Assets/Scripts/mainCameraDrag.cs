@@ -7,7 +7,8 @@ using UnityEngine.XR;
 public class mainCameraDrag : MonoBehaviour
 {
     private Transform tr;                       // 화면의 현재 위치
-    private Vector2 firstTouch;                 // 화면 드래그 시작 위치
+    private Vector2 nowPos;
+    private Vector2 prePos;
 
     public GameObject skinBackground;           // 스킨 페이지 배경 화면
 
@@ -59,32 +60,34 @@ public class mainCameraDrag : MonoBehaviour
     // 화면 드래그 시 화면 상하 이동
     void Move()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.touchCount == 1)
         {
-            firstTouch = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        }
-        if (Input.GetMouseButton(0))
-        {
-            Vector2 currentTouch = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            if (Vector2.Distance(firstTouch, currentTouch) > 1f)
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
             {
-                if (firstTouch.y < currentTouch.y)
+                prePos = touch.position - touch.deltaPosition;
+            }
+            else if (touch.phase == TouchPhase.Moved)
+            {
+                nowPos = touch.position - touch.deltaPosition;
+
+                if (prePos.y < nowPos.y)
                 {
                     if (tr.position.y > limitMinY)
                     {
                         tr.Translate(Vector2.down * dragSpeed);
-                        skinBackground.GetComponent<Transform>().Translate(Vector2.down * dragSpeed);
+                        skinBackground.GetComponent<Transform>().Translate(Vector2.down * dragSpeed * Time.deltaTime);
                     }
                 }
-                else if (firstTouch.y > currentTouch.y)
+                else if (prePos.y > nowPos.y)
                 {
                     if (tr.position.y < limitMaxY)
                     {
                         tr.Translate(Vector2.up * dragSpeed);
-                        skinBackground.GetComponent<Transform>().Translate(Vector2.up * dragSpeed);
+                        skinBackground.GetComponent<Transform>().Translate(Vector2.up * dragSpeed * Time.deltaTime);
                     }
                 }
+                prePos = touch.position - touch.deltaPosition;
             }
         }
     }

@@ -10,8 +10,6 @@ public class queenWork : MonoBehaviour
     private float lastClickTime;        // 마지막 클릭 시간
     private float comebackTime = 0.5f;  // 마지막 클릭 시간 후 여왕벌 복귀까지 남은 시간
 
-    private GameObject[] UpgradePanel;  // 업그레이드 메뉴
-
     float randX;                        // 여왕벌이 날아갈 랜덤 X 좌표
     float randY;                        // 여왕벌이 날아갈 래덤 Y 좌표
 
@@ -36,16 +34,8 @@ public class queenWork : MonoBehaviour
                 {
                     isClicked = true;
                     anim.SetBool("isClicked", true);
-                    
                 }
-
                 lastClickTime = Time.time;
-
-                UpgradePanel = GameObject.FindGameObjectsWithTag("upgradePanel");
-                for (int i = 0; i < UpgradePanel.Length; i++)
-                {
-                    UpgradePanel[i].SetActive(false);
-                }
             }
         }
         if (isClicked)
@@ -69,7 +59,7 @@ public class queenWork : MonoBehaviour
         }
         if (GameManager.temperature < 0)
         {
-            GameObject prefabQueen = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/queen/queenSleep.prefab", typeof(GameObject));
+            GameObject prefabQueen = Resources.Load<GameObject>("Prefabs/queen/queenSleep");
             home.x -= 0.2f;
             home.y -= 0.35f;
             Instantiate(prefabQueen, home, Quaternion.identity);

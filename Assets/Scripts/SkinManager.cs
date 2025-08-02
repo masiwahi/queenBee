@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using System.Linq;
 
 public class SkinManager : MonoBehaviour
 {
@@ -49,23 +50,8 @@ public class SkinManager : MonoBehaviour
     // È­¸é »ó´Ü ·Î¾âÁ©¸®¿Í ¹ú²Ü¾ç ¾÷µ¥ÀÌÆ®
     void ShowHoney()
     {
-        if (GameManager.honey == 0) 
-        {
-            HoneyText.text = "0";
-        }
-        else
-        {
-            HoneyText.text = DivideNumber(GameManager.honey);
-        }
-
-        if (GameManager.royalJelly == 0)
-        {
-            RoyalJellyText.text = "0";
-        }
-        else
-        {
-            RoyalJellyText.text = DivideNumber(GameManager.royalJelly);
-        }
+        HoneyText.text = DivideNumber(GameManager.honey);
+        RoyalJellyText.text = DivideNumber(GameManager.royalJelly);
     }
 
     // ¿©¿Õ ½ºÅ² ¼±ÅÃ
@@ -73,11 +59,13 @@ public class SkinManager : MonoBehaviour
     {
         queenSelectSkinImage.sprite = skin.GetComponent<SpriteRenderer>().sprite;
 
-        GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");        
+        GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
+        List<GameObject> sortedbtnList = btnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
+
         Button skinBtn = skin.GetComponentInChildren<Button>();
-        for (int i = 0; i < btnList.Length; i++)
+        for (int i = 0; i < sortedbtnList.Count; i++)
         {
-            Button checkBtn = btnList[i].GetComponentInChildren<Button>();
+            Button checkBtn = sortedbtnList[i].GetComponentInChildren<Button>();
             if (checkBtn != skinBtn)
             {
                 checkBtn.GetComponent<Image>().sprite = basicImg;
@@ -99,9 +87,11 @@ public class SkinManager : MonoBehaviour
         int skinNum = 0;
 
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
-        for (int i = 0; i < btnList.Length; i++)
+        List<GameObject> sortedbtnList = btnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
+
+        for (int i = 0; i < sortedbtnList.Count; i++)
         {
-            string check = btnList[i].GetComponent<SpriteRenderer>().sprite.name;
+            string check = sortedbtnList[i].GetComponent<SpriteRenderer>().sprite.name;
             check = check.Substring(0, check.Length - 4);
 
             if (check == skinName)
@@ -124,7 +114,7 @@ public class SkinManager : MonoBehaviour
                 Transform selectBtn = skin.transform.Find("Canvas").Find("selectSkin");
                 selectBtn.gameObject.SetActive(true);
 
-                skin.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/queen/" + skinName + "1.png", typeof(Sprite));
+                skin.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/queen/" + skinName + "1");
                 queenSkinList[skinNum] = true;
             }
         }
@@ -140,7 +130,7 @@ public class SkinManager : MonoBehaviour
                 Transform selectBtn = skin.transform.Find("Canvas").Find("selectSkin");
                 selectBtn.gameObject.SetActive(true);
 
-                skin.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/queen/" + skinName + "1.png", typeof(Sprite));
+                skin.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/queen/" + skinName + "1");
                 queenSkinList[skinNum] = true;
             }
         }
@@ -152,10 +142,12 @@ public class SkinManager : MonoBehaviour
         beeSelectSkinImage.sprite = skin.GetComponent<SpriteRenderer>().sprite;
 
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("beeSkin");
+        List<GameObject> sortedbtnList = btnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
+
         Button skinBtn = skin.GetComponentInChildren<Button>();
-        for (int i = 0; i < btnList.Length; i++)
+        for (int i = 0; i < sortedbtnList.Count; i++)
         {
-            Button checkBtn = btnList[i].GetComponentInChildren<Button>();
+            Button checkBtn = sortedbtnList[i].GetComponentInChildren<Button>();
             if (checkBtn != skinBtn)
             {
                 checkBtn.GetComponent<Image>().sprite = basicImg;
@@ -176,9 +168,11 @@ public class SkinManager : MonoBehaviour
         int skinNum = 0;
 
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("beeSkin");
-        for (int i = 0; i < btnList.Length; i++)
+        List<GameObject> sortedbtnList = btnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
+
+        for (int i = 0; i < sortedbtnList.Count; i++)
         {
-            string check = btnList[i].GetComponent<SpriteRenderer>().sprite.name;
+            string check = sortedbtnList[i].GetComponent<SpriteRenderer>().sprite.name;
             check = check.Substring(0, check.Length - 4);
 
             if (check == skinName)
@@ -201,7 +195,7 @@ public class SkinManager : MonoBehaviour
                 Transform selectBtn = skin.transform.Find("Canvas").Find("selectSkin");
                 selectBtn.gameObject.SetActive(true);
 
-                skin.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/bee/" + skinName + "5.png", typeof(Sprite));
+                skin.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/bee/" + skinName + "5");
                 beeSkinList[skinNum] = true;
             }
         }
@@ -217,7 +211,7 @@ public class SkinManager : MonoBehaviour
                 Transform selectBtn = skin.transform.Find("Canvas").Find("selectSkin");
                 selectBtn.gameObject.SetActive(true);
 
-                skin.GetComponent<SpriteRenderer>().sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Sprites/bee/" + skinName + "5.png", typeof(Sprite));
+                skin.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/bee/" + skinName + "5");
                 beeSkinList[skinNum] = true;
             }
         }
@@ -239,12 +233,13 @@ public class SkinManager : MonoBehaviour
     void ShowSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
+        List<GameObject> sortedbtnList = btnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
 
-        for (int i = 1; i < btnList.Length; i++)
+        for (int i = 1; i < sortedbtnList.Count; i++)
         {
             if (!queenSkinList[i])
             {
-                Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buySkin");
+                Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
                 if (queenSkinJellyList[i])
                 {
                     Image image = buyBtn.Find("Image").GetComponent<Image>();
@@ -255,12 +250,13 @@ public class SkinManager : MonoBehaviour
         }
 
         GameObject[] beeBtnList = GameObject.FindGameObjectsWithTag("beeSkin");
+        List<GameObject> sortedbeeBtnList = beeBtnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
 
-        for (int i = 1; i < beeBtnList.Length; i++)
+        for (int i = 1; i < sortedbeeBtnList.Count; i++)
         {
             if (!beeSkinList[i])
             {
-                Transform buyBtn = beeBtnList[i].transform.Find("Canvas").Find("buySkin");
+                Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
                 if (beeSkinJellyList[i])
                 {
                     Image image = buyBtn.Find("Image").GetComponent<Image>();
@@ -275,9 +271,11 @@ public class SkinManager : MonoBehaviour
     void ActiveSkinMoney()
     {
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
+        List<GameObject> sortedbtnList = btnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
+
         Color color = new Color32(112, 59, 0, 255);
 
-        for (int i = 1; i < btnList.Length; i++)
+        for (int i = 1; i < sortedbtnList.Count; i++)
         { 
             if (!queenSkinList[i])
             {
@@ -285,14 +283,14 @@ public class SkinManager : MonoBehaviour
                 {
                     if (GameManager.royalJelly < queenSkinPriceList[i])
                     {
-                        Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = jellyLockImg;
                         buyBtn.Find("Text").GameObject().GetComponent<Text>().color = Color.grey;
                     }
                     else
                     {
-                        Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
 
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = jellyImg;
@@ -303,14 +301,14 @@ public class SkinManager : MonoBehaviour
                 {
                     if (GameManager.honey < queenSkinPriceList[i])
                     {
-                        Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = honeyLockImg;
                         buyBtn.Find("Text").GameObject().GetComponent<Text>().color = Color.grey;
                     }
                     else
                     {
-                        Transform buyBtn = btnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
 
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = honeyImg;
@@ -321,8 +319,9 @@ public class SkinManager : MonoBehaviour
         }
 
         GameObject[] beeBtnList = GameObject.FindGameObjectsWithTag("beeSkin");
+        List<GameObject> sortedbeeBtnList = beeBtnList.OrderByDescending(go => go.transform.position.y).ThenBy(go => go.transform.position.x).ToList();
 
-        for (int i = 1; i < beeBtnList.Length; i++)
+        for (int i = 1; i < sortedbeeBtnList.Count; i++)
         {
             if (!beeSkinList[i])
             {
@@ -330,14 +329,14 @@ public class SkinManager : MonoBehaviour
                 {
                     if (GameManager.royalJelly < beeSkinPriceList[i])
                     {
-                        Transform buyBtn = beeBtnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = jellyLockImg;
                         buyBtn.Find("Text").GameObject().GetComponent<Text>().color = Color.grey;
                     }
                     else
                     {
-                        Transform buyBtn = beeBtnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
 
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = jellyImg;
@@ -348,14 +347,14 @@ public class SkinManager : MonoBehaviour
                 {
                     if (GameManager.honey < beeSkinPriceList[i])
                     {
-                        Transform buyBtn = beeBtnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = honeyLockImg;
                         buyBtn.Find("Text").GameObject().GetComponent<Text>().color = Color.grey;
                     }
                     else
                     {
-                        Transform buyBtn = beeBtnList[i].transform.Find("Canvas").Find("buySkin");
+                        Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
 
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
                         image.sprite = honeyImg;

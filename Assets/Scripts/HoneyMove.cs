@@ -16,7 +16,7 @@ public class HoneyMove : MonoBehaviour
         GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         txt.text = "+" + (gm.queenHealth + gm.queenStorage + gm.royalQueenHealth + gm.royalQueenStorage).ToString("###,###");
 
-        Destroy(this.gameObject, 5f);
+        Destroy(this.gameObject, 1f);
     }
 
     // Update is called once per frame
