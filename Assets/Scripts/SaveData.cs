@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 [System.Serializable]
 public class SaveData
 {
@@ -7,33 +9,10 @@ public class SaveData
     public float temperature;
     public float temperatureChange;
 
-    public long queenHealth;
-    public long queenHealthPrice;
-    public long queenStorage;
-    public long queenStoragePrice;
-
-    public long beeHealthPrice;
-    public long beeStoragePrice;
-    public long beeSpeedPrice;
-
-    public long beeCount;
-    public long beeCountPrice;
-    public long honeyComb;
-    public long honeyCombPrice;
-
-    public long royalQueenHealth;
-    public long royalQueenHealthPrice;
-    public long royalQueenStorage;
-    public long royalQueenStoragePrice;
-    public long royalBeeHealthPrice;
-    public long royalBeeStoragePrice;
-
-    public long beeHealth;
-    public long beeStorage;
-    public long beeSpeed;
-
-    public long royalBeeHealth;
-    public long royalBeeStorage;
+    public List<string> upgradeKey = new();
+    public List<long> upgradeValue = new();
+    public List<string> upgradePriceKey = new();
+    public List<long> upgradePriceValue = new();
 
     public string Queen;
     public string Bee;
@@ -45,5 +24,17 @@ public class SaveData
 
     public bool[] beeSkinList = { true, false, false, false, false, false, false, false, false, false, false };
 
+    public bool[] questClearList = { false, false, false, false, false };
+    public int[] questCount = { 0, 0, 0, 0, 0 };
+
     public string lastPlayTime;
+    public int day;
+
+    public string collectStartTime;
+    public bool collecting;
+    public List<string> itemName = new();
+
+    public int[] itemList = new int[32];
+
+    public int tutorialCount;
 }

@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class adWork : MonoBehaviour
 {
     private Transform tr;
     private int cnt = 0;
+    public Button adButton;
 
     // Start is called before the first frame update
     void Start()
     {
         tr = GetComponent<Transform>();
+        adButton = GameObject.Find("AdButton").GetComponent<Button>();
 
         Destroy(this.gameObject, 14f);
     }
@@ -45,6 +48,7 @@ public class adWork : MonoBehaviour
 
     public void ckickAd()
     {
+        adButton.onClick.Invoke();
         Destroy(this.gameObject);
     }
 }

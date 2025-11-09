@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.XR;
 using System.Linq;
 
 public class SkinManager : MonoBehaviour
@@ -75,15 +73,15 @@ public class SkinManager : MonoBehaviour
 
         string skinName = skin.GetComponent<SpriteRenderer>().sprite.name;
 
-        GameManager.Queen = skinName.Substring(0, skinName.Length - 1);
-        Queen = skinName.Substring(0, skinName.Length - 1);
+        GameManager.Queen = skinName[..^1];
+        Queen = skinName[..^1];
     }
 
     // 여왕 스킨 구매
     public void queenSkinBuy(GameObject skin)
     {
         string skinName = skin.GetComponent<SpriteRenderer>().sprite.name;
-        skinName = skinName.Substring(0, skinName.Length - 4);
+        skinName = skinName[..^4];
         int skinNum = 0;
 
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("queenSkin");
@@ -92,15 +90,24 @@ public class SkinManager : MonoBehaviour
         for (int i = 0; i < sortedbtnList.Count; i++)
         {
             string check = sortedbtnList[i].GetComponent<SpriteRenderer>().sprite.name;
-            check = check.Substring(0, check.Length - 4);
+            check = check[..^4];
 
             if (check == skinName)
             {
                 skinNum = i;
             }
         }
+        long discount = 0;
+        if (ItemManager.itemList[9] != 0)
+        {
+            discount += queenSkinPriceList[skinNum] * (ItemManager.itemList[9] + 1) / 1000;
+        }
+        if (ItemManager.itemList[14] != 0)
+        {
+            discount += queenSkinPriceList[skinNum] * (ItemManager.itemList[14] + 1) / 1000;
+        }
 
-        long money = queenSkinPriceList[skinNum];
+        long money = queenSkinPriceList[skinNum] - discount;
         bool jelly = queenSkinJellyList[skinNum];
         if (jelly)
         {
@@ -157,14 +164,14 @@ public class SkinManager : MonoBehaviour
 
         string skinName = skin.GetComponent<SpriteRenderer>().sprite.name;
 
-        Bee = skinName.Substring(0, skinName.Length - 1);
+        Bee = skinName[..^1];
     }
 
     //일벌 스킨 구매
     public void beeSkinBuy(GameObject skin)
     {
         string skinName = skin.GetComponent<SpriteRenderer>().sprite.name;
-        skinName = skinName.Substring(0, skinName.Length - 4);
+        skinName = skinName[..^4];
         int skinNum = 0;
 
         GameObject[] btnList = GameObject.FindGameObjectsWithTag("beeSkin");
@@ -173,7 +180,7 @@ public class SkinManager : MonoBehaviour
         for (int i = 0; i < sortedbtnList.Count; i++)
         {
             string check = sortedbtnList[i].GetComponent<SpriteRenderer>().sprite.name;
-            check = check.Substring(0, check.Length - 4);
+            check = check[..^4];
 
             if (check == skinName)
             {
@@ -181,7 +188,17 @@ public class SkinManager : MonoBehaviour
             }
         }
 
-        long money = beeSkinPriceList[skinNum];
+        long discount = 0;
+        if (ItemManager.itemList[9] != 0)
+        {
+            discount += queenSkinPriceList[skinNum] * (ItemManager.itemList[9] + 1) / 1000;
+        }
+        if (ItemManager.itemList[24] != 0)
+        {
+            discount += queenSkinPriceList[skinNum] * (ItemManager.itemList[24] + 1) / 1000;
+        }
+
+        long money = beeSkinPriceList[skinNum] - discount;
         bool jelly = beeSkinJellyList[skinNum];
         if (jelly)
         {
@@ -239,13 +256,23 @@ public class SkinManager : MonoBehaviour
         {
             if (!queenSkinList[i])
             {
+                long discount = 0;
+                if (ItemManager.itemList[9] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[9] + 1) / 1000;
+                }
+                if (ItemManager.itemList[14] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[14] + 1) / 1000;
+                }
+                
                 Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
                 if (queenSkinJellyList[i])
                 {
                     Image image = buyBtn.Find("Image").GetComponent<Image>();
                     image.sprite = jellyImg;
                 }
-                buyBtn.Find("Text").GameObject().GetComponent<Text>().text = DivideNumber(queenSkinPriceList[i]);
+                buyBtn.Find("Text").GameObject().GetComponent<Text>().text = DivideNumber(queenSkinPriceList[i] - discount);
             }
         }
 
@@ -256,13 +283,23 @@ public class SkinManager : MonoBehaviour
         {
             if (!beeSkinList[i])
             {
+                long discount = 0;
+                if (ItemManager.itemList[9] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[9] + 1) / 1000;
+                }
+                if (ItemManager.itemList[24] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[24] + 1) / 1000;
+                }
+
                 Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
                 if (beeSkinJellyList[i])
                 {
                     Image image = buyBtn.Find("Image").GetComponent<Image>();
                     image.sprite = jellyImg;
                 }
-                buyBtn.Find("Text").GameObject().GetComponent<Text>().text = DivideNumber(beeSkinPriceList[i]);
+                buyBtn.Find("Text").GameObject().GetComponent<Text>().text = DivideNumber(beeSkinPriceList[i] - discount);
             }
         }
     }
@@ -276,12 +313,23 @@ public class SkinManager : MonoBehaviour
         Color color = new Color32(112, 59, 0, 255);
 
         for (int i = 1; i < sortedbtnList.Count; i++)
-        { 
+        {
             if (!queenSkinList[i])
             {
+                long discount = 0;
+                if (ItemManager.itemList[9] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[9] + 1) / 1000;
+                }
+                if (ItemManager.itemList[14] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[14] + 1) / 1000;
+                }
+
+
                 if (queenSkinJellyList[i])
                 {
-                    if (GameManager.royalJelly < queenSkinPriceList[i])
+                    if (GameManager.royalJelly < queenSkinPriceList[i] - discount)
                     {
                         Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
@@ -299,7 +347,7 @@ public class SkinManager : MonoBehaviour
                 }
                 else
                 {
-                    if (GameManager.honey < queenSkinPriceList[i])
+                    if (GameManager.honey < queenSkinPriceList[i] - discount)
                     {
                         Transform buyBtn = sortedbtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
@@ -323,11 +371,22 @@ public class SkinManager : MonoBehaviour
 
         for (int i = 1; i < sortedbeeBtnList.Count; i++)
         {
+            
             if (!beeSkinList[i])
             {
+                long discount = 0;
+                if (ItemManager.itemList[9] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[9] + 1) / 1000;
+                }
+                if (ItemManager.itemList[24] != 0)
+                {
+                    discount += queenSkinPriceList[i] * (ItemManager.itemList[24] + 1) / 1000;
+                }
+
                 if (beeSkinJellyList[i])
                 {
-                    if (GameManager.royalJelly < beeSkinPriceList[i])
+                    if (GameManager.royalJelly < beeSkinPriceList[i] - discount)
                     {
                         Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();
@@ -345,7 +404,7 @@ public class SkinManager : MonoBehaviour
                 }
                 else
                 {
-                    if (GameManager.honey < beeSkinPriceList[i])
+                    if (GameManager.honey < beeSkinPriceList[i] - discount)
                     {
                         Transform buyBtn = sortedbeeBtnList[i].transform.Find("Canvas").Find("buySkin");
                         Image image = buyBtn.Find("Image").GetComponent<Image>();

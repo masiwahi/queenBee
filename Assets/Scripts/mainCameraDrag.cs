@@ -71,7 +71,7 @@ public class mainCameraDrag : MonoBehaviour
             {
                 nowPos = touch.position - touch.deltaPosition;
 
-                if (prePos.y < nowPos.y)
+                if (prePos.y < nowPos.y && nowPos.y - prePos.y > 0.1f)
                 {
                     if (tr.position.y > limitMinY)
                     {
@@ -79,7 +79,7 @@ public class mainCameraDrag : MonoBehaviour
                         skinBackground.GetComponent<Transform>().Translate(Vector2.down * dragSpeed * Time.deltaTime);
                     }
                 }
-                else if (prePos.y > nowPos.y)
+                else if (prePos.y > nowPos.y && prePos.y - nowPos.y > 0.1f)
                 {
                     if (tr.position.y < limitMaxY)
                     {
@@ -130,6 +130,33 @@ public class mainCameraDrag : MonoBehaviour
 
     // 맵 스킨 페이지 나가기
     public void ExitMapSelect()
+    {
+        tr.position = new Vector3(0, 0, -10);
+        limitMinY = mainLimitMinY;
+    }
+
+    // 모험 스킨 페이지 들어가기
+    public void EnterCollectSelect()
+    {
+        tr.position = new Vector3(-16, 15, -10);
+        limitMinY = 0;
+    }
+
+    // 모험 스킨 페이지 나가기
+    public void ExitCollectSelect()
+    {
+        tr.position = new Vector3(0, 0, -10);
+        limitMinY = mainLimitMinY;
+    }
+
+    public void EnterItemSelect()
+    {
+        tr.position = new Vector3(24, 15, -10);
+        limitMinY = 1.7f;
+    }
+
+    // 모험 스킨 페이지 나가기
+    public void ExitItemSelect()
     {
         tr.position = new Vector3(0, 0, -10);
         limitMinY = mainLimitMinY;

@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
   - bee
   - honeycomb
@@ -13,6 +13,11 @@ TagManager:
   - mapSkin
   - upgradePanel
   - tempBottle
+  - queenSelect
+  - beeSelect
+  - itemList
+  - quest
+  - item
   layers:
   - Default
   - TransparentFX
@@ -59,3 +64,5 @@ TagManager:
   - name: character
     uniqueID: 3003295795
     locked: 0
+  m_RenderingLayers:
+  - Default

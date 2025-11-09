@@ -11,4 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: 4c7cb3d0011a55a40aac5d900e9e435c
+  - enabled: 0
+    path: Assets/Scenes/CollectScene.unity
+    guid: b586cfe2db17e27409692171628425d4
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

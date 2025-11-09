@@ -5,21 +5,17 @@ using UnityEngine;
 
 public class beeWork : MonoBehaviour
 {
-    public static long beeHealth = 0;           // 일벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public static long beeStorage = 1;          // 일벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public static long beeSpeed = 0;            // 일벌(오토) 속도가 오르면 꿀을 더 빨리 가져옴
-
-    public static long royalBeeHealth = 0;      // 일벌(오토) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public static long royalBeeStorage = 0;     // 일벌(오토) 저장공간이 많으면 꿀을 더 많이 저장해서 운반 가능
-
     private Animator anim;                      // 일벌 움직이는 애니메이션
     private bool halftime = true;               // 일벌이 꿀 가져오는 시간
     public Vector2 point;                       // 일벌이 꿀 가져오는 위치
     private Vector3 home;                       // 일벌이 집으로 돌아오는 위치
+    
+    GameManager gm;
 
     // Start is called before the first frame update
     void Start()
     {
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         home = transform.position;
         float spotX = home.x;
         if (home.x < 0)
@@ -44,7 +40,7 @@ public class beeWork : MonoBehaviour
     {
         float distance = (home.x - point.x) * (home.x - point.x) + (home.y - point.y) * (home.y - point.y);
         distance = Mathf.Sqrt(distance);
-        long dueTime = (12 - beeSpeed / 5) / 2;
+        long dueTime = (12 - gm.upgrade["beeSpeed"] / 5) / 2;
 
         if (!halftime && GameManager.temperature >= 0)
         {
@@ -73,7 +69,25 @@ public class beeWork : MonoBehaviour
 
             if (GameManager.temperature >= 0)
             {
-                GameManager.honey += beeStorage + beeHealth + royalBeeHealth + royalBeeStorage;
+                long gainHoney = gm.upgrade["beeHealth"] + gm.upgrade["beeStorage"] + gm.upgrade["royalBeeHealth"] + gm.upgrade["royalBeeStorage"];
+                if (ItemManager.itemList[23] > 0)
+                {
+                    gainHoney += gm.upgrade["beeHealth"] * (ItemManager.itemList[23] + 1) / 1000;
+                }
+                if (ItemManager.itemList[22] > 0)
+                {
+                    gainHoney += gm.upgrade["beeStorage"] * (ItemManager.itemList[22] + 1) / 1000;
+                }
+                if (ItemManager.itemList[1] > 0)
+                {
+                    gainHoney += gainHoney * (ItemManager.itemList[1] + 1) / 1000;
+                }
+                if (ItemManager.itemList[28] > 0)
+                {
+                    gainHoney += gainHoney * (ItemManager.itemList[28] + 1) / 1000;
+                }
+
+                GameManager.honey += gainHoney;
             }
 
             float spotX = home.x;
@@ -88,7 +102,7 @@ public class beeWork : MonoBehaviour
             float spotY = home.y + Random.Range(1, 4);
             point = new Vector2(spotX, spotY);
 
-            yield return new WaitForSeconds(12f - beeSpeed/5);
+            yield return new WaitForSeconds(12f - gm.upgrade["beeSpeed"] / 5);
         }
     }
 
@@ -108,7 +122,7 @@ public class beeWork : MonoBehaviour
                 anim.SetBool("halftime", false);
             }
 
-            yield return new WaitForSeconds((12f - beeSpeed / 5) / 2);
+            yield return new WaitForSeconds((12f - gm.upgrade["beeSpeed"] / 5) / 2);
         }
     }
 }

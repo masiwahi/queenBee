@@ -7,9 +7,9 @@ using UnityEngine;
 public class AdManager : MonoBehaviour
 {
     // test 용 광고 ID
-    private readonly string adUnitId = "ca-app-pub-3940256099942544/5224354917";
+    // private readonly string adUnitId = "ca-app-pub-3940256099942544/5224354917";
     // 스토어 등록용 광고 ID
-    //private readonly string adUnitId = "ca-app-pub-5527671249030651/2885093689";
+    private readonly string adUnitId = "ca-app-pub-5527671249030651/2885093689";
 
     private RewardedAd _rewardedAd;
 
@@ -80,8 +80,16 @@ public class AdManager : MonoBehaviour
                 Debug.Log(String.Format(rewardMsg, reward.Type, reward.Amount));
                 if (reward.Amount == 10)
                 {
-                    GameManager gm = transform.GetComponent<GameManager>();
-                    GameManager.honey += (beeWork.beeHealth + beeWork.beeStorage + gm.queenHealth + gm.queenStorage) * 10;
+                    GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+                    long rewardHoney = (gm.upgrade["beeHealth"] + gm.upgrade["beeStorage"] + gm.upgrade["royalBeeHealth"] + gm.upgrade["royalBeeStorage"]) * 90 + (gm.upgrade["queenHealth"] + gm.upgrade["queenStorage"] + gm.upgrade["royalQueenHealth"] + gm.upgrade["royalQueenStorage"]) * 180;
+                    long additional = 0;
+                    if (ItemManager.itemList[6] != 0)
+                    {
+                        additional += rewardHoney * (ItemManager.itemList[6] + 1) / 1000;
+                    }
+                    GameManager.honey += rewardHoney + additional;
+
+                    GameManager.questCount[3]++;
                 }
             });
         }

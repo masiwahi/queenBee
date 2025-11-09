@@ -1,10 +1,10 @@
-using System.Collections;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,77 +16,24 @@ public class GameManager : MonoBehaviour
     public static float minTemp = -5f;      // 최저 온도
     public static float maxTemp = 15f;      // 최고 온도
 
-    public long queenHealth;                // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long queenHealthPrice;           // 여왕(클리커) 체력이 강화 비용
-    public long queenStorage;               // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long queenStoragePrice;          // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
-
-    public long beeHealthPrice;             // 일벌(오토) 체력이 강화 비용
-    public long beeStoragePrice;            // 일벌(오토) 꿀주머니(저장공간) 강화 비용
-    public long beeSpeedPrice;              // 일벌(오토) 꿀주머니(저장공간) 강화 비용
-
-    public long beeCount;                   // 꿀벌(오토) 가동 수
-    public long beeCountPrice;              // 꿀벌(오토) 구매 가격
-    public long honeyComb;                  // 꿀벌이 지낼 수 있는 공간(벌집)
-    public long honeyCombPrice;             // 꿀벌이 지낼 수 있는 공간(벌집) 구매 가격
-
     public int honeyCombWidth;              // 가로 벌집 최대 설치 수
     public float honeyCombX;                // 벌집 가로 간격
     public float honeyCombY;                // 벌집 세로 간격
 
-    public long royalQueenHealth;           // 여왕(클리커) 체력이 높으면 더 멀리 날아가서 많은 꽃을 운반 가능
-    public long royalQueenHealthPrice;      // 여왕(클리커) 체력이 강화 비용
-    public long royalQueenStorage;          // 여왕(클리커) 꿀주머니(저장공간)이 많으면 꿀을 더 많이 저장해서 운반 가능
-    public long royalQueenStoragePrice;     // 여왕(클리커) 꿀주머니(저장공간) 강화 비용
-    public long royalBeeHealthPrice;        // 일벌(오토) 체력이 강화 비용
-    public long royalBeeStoragePrice;       // 일벌(오토) 꿀주머니(저장공간) 강화 비용
-
     public string lastPlayTime;
+    public int day;
 
+    public Dictionary<string, long> upgrade = new Dictionary<string, long>();
+    public Dictionary<string, long> upgradePrice = new Dictionary<string, long>();
+    public Dictionary<string, Text> upgradeText = new Dictionary<string, Text>();
+    public Dictionary<string, Text> upgradeLevel = new Dictionary<string, Text>();
+    public Dictionary<string, Button> upgradeBtn = new Dictionary<string, Button>();
 
     public Text HoneyText;                  // 꿀벌 양 체크하는 글씨
     public Text RoyalJellyText;             // 로얄젤리 양 확인하는 글씨
     public Text temperatureText;            // 온도 변화 확인하는 글씨
 
-    public Text queenHealthText;            // 여왕벌 체력 강화확인 글씨
-    public Text queenStorageText;           // 여왕벌 꿀주머니 강화확인 글씨
-    public Text honeyCombText;              // 벌집 강화확인 글씨
-    public Text queenHealthLevel;           // 여왕벌 체력 강화확인 글씨
-    public Text queenStorageLevel;          // 여왕벌 꿀주머니 강화확인 글씨
-    public Text honeyCombLevel;             // 벌집 강화확인 글씨
-
-    public Text beeHealthText;              // 일벌 체력 강화확인 글씨
-    public Text beeStorageText;             // 일벌 꿀주머니 강화확인 글씨
-    public Text beeSpeedText;               // 일벌 꿀주머니 강화확인 글씨
-    public Text beeCountText;               // 일벌 수 강화확인 글씨
-    public Text beeHealthLevel;             // 일벌 체력 강화확인 글씨
-    public Text beeStorageLevel;            // 일벌 꿀주머니 강화확인 글씨
-    public Text beeSpeedLevel;              // 일벌 꿀주머니 강화확인 글씨
-    public Text beeCountLevel;              // 일벌 수 강화확인 글씨
-
-    public Text royalQueenHealthText;       // 여왕벌 체력 강화확인 글씨
-    public Text royalQueenStorageText;      // 여왕벌 꿀주머니 강화확인 글씨
-    public Text royalBeeHealthText;         // 일벌 체력 강화확인 글씨
-    public Text royalBeeStorageText;        // 일벌 꿀주머니 강화확인 글씨
-    public Text royalQueenHealthLevel;      // 여왕벌 체력 강화확인 글씨
-    public Text royalQueenStorageLevel;     // 여왕벌 꿀주머니 강화확인 글씨
-    public Text royalBeeHealthLevel;        // 일벌 체력 강화확인 글씨
-    public Text royalBeeStorageLevel;       // 일벌 꿀주머니 강화확인 글씨
-
-    public Button queenHealthBtn;           // 여왕벌 체력 강화 버튼
-    public Button queenStorageBtn;          // 여왕벌 꿀주머니 강화 버튼
-    public Button honeyCombBtn;             // 벌집 강화 버튼
     public Button swarmingBtn;              // 분봉하기 버튼
-
-    public Button beeHealthBtn;             // 일벌 체력 강화 버튼
-    public Button beeStorageBtn;            // 일벌 꿀주머니 강화 버튼
-    public Button beeSpeedBtn;              // 일벌 꿀주머니 강화 버튼
-    public Button beeCountBtn;              // 일벌 수 강화 버튼
-
-    public Button royalQueenHealthBtn;      // 여왕벌 체력 강화 버튼
-    public Button royalQueenStorageBtn;     // 여왕벌 꿀주머니 강화 버튼
-    public Button royalBeeHealthBtn;        // 일벌 체력 강화 버튼
-    public Button royalBeeStorageBtn;       // 일벌 꿀주머니 강화 버튼
 
     public GameObject prefabHoney;          // 클릭시 꿀이 늘어나는 모션
     public GameObject prefabHoneyComb;      // 벌집 구매시 증가하는 벌집
@@ -113,9 +60,11 @@ public class GameManager : MonoBehaviour
     public GameObject tutorial;             // 튜토리얼 표시 화면
 
     public GameObject rewardPanel;
+    public Text maxTimeText;
     public Text alertText;
     public Text rewardText;
     public GameObject exitGamePanel;
+    public GameObject questPanel;
 
     public GameObject canvasSkin;
     public GameObject canvasMap;
@@ -123,9 +72,21 @@ public class GameManager : MonoBehaviour
     public Button skinExitBtn;
     public Button mapExitBtn;
 
+    public static bool[] questClearList = { false, false, false, false, false };
+    private int[] questCondition = { 100, 5, 1, 2, 4 };
+    private int[] questReward = { 10, 10, 10, 20, 50 };
+    public static int[] questCount = { 0, 0, 0, 0, 0 };
+
+
+    GameObject[] panelList;
+    private List<GameObject> questList = new List<GameObject>();
+
     // Start is called before the first frame update
     void Start()
     {
+        SettingObject();
+        HideObject();
+
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         queenSpot = GameObject.FindGameObjectWithTag("queen").transform.position;
         string path = Application.persistentDataPath + "/save.xml";
@@ -134,15 +95,33 @@ public class GameManager : MonoBehaviour
             Load();
             FillHoneyComb();
             FillBee();
-            tutorial.SetActive(false);
             AwayReward();
         }
         FillHoneyCombBG();
         SettingSkin();
         MapSelect();
         QueenSkinSelect();
+
+        if(TutorialManager.Count > 56)
+        {
+            tutorial.SetActive(false);
+        }
+
+        for (int i = 0; i < questClearList.Length; i++)
+        {
+            if (questClearList[i])
+            {
+                ClearQuest(i);
+            }
+        }
+
+        foreach (KeyValuePair<string, Text> pair in upgradeText)
+        {
+            UpdateUpgradeText(pair.Key);
+        }
+
         StartCoroutine(TemperatureChangeWork());
-        StartCoroutine(advertiseWork());
+        StartCoroutine(AdvertiseWork());
     }
 
     // Update is called once per frame
@@ -150,40 +129,18 @@ public class GameManager : MonoBehaviour
     {
         ShowHoney();
 
-        UpdateQueenHealthText();
-        UpdateQueenStorageText();
-        UpdateHoneyCombText();
-
-        QueenHealthButtonActiveCheck();
-        QueenStorageButtonActiveCheck();
-        HoneyCombButtonActiveCheck();
         SwarmingButtonActiveCheck();
 
-        UpdateBeeHealthText();
-        UpdateBeeStorageText();
-        UpdateBeeSpeedText();
-        UpdateBeeCountText();
-
-        BeeHealthButtonActiveCheck();
-        BeeStorageButtonActiveCheck();
-        BeeSpeedButtonActiveCheck();
-        BeeCountButtonActiveCheck();
-
-        UpdateRoyalQueenHealthText();
-        UpdateRoyalQueenStorageText();
-        UpdateRoyalBeeHealthText();
-        UpdateRoyalBeeStorageText();
-
-        RoyalQueenHealthButtonActiveCheck();
-        RoyalQueenStorageButtonActiveCheck();
-        RoyalBeeHealthButtonActiveCheck();
-        RoyalBeeStorageButtonActiveCheck();
+        foreach (KeyValuePair<string, Button> pair in upgradeBtn)
+        {
+            UpgradeyActiveCheck(pair.Key);
+        }
 
         HoneyIncrease();
 
         if (Input.GetKey("escape"))
         {
-            GameObject[] panelList = GameObject.FindGameObjectsWithTag("upgradePanel");
+            
             if (canvasMap.activeSelf)
             {
                 mapExitBtn.onClick.Invoke();
@@ -192,7 +149,7 @@ public class GameManager : MonoBehaviour
             {
                 skinExitBtn.onClick.Invoke();
             }
-            else 
+            else
             {
                 bool activeCount = true;
                 for(int i = 0; i < panelList.Length; i++)
@@ -209,7 +166,9 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
+
+        UpdateQuestText();
+        ResetQuest();
     }
     public void ExitGame()
     {
@@ -222,13 +181,105 @@ public class GameManager : MonoBehaviour
         Save();
     }
 
-    public void addHoney()
+    void SettingObject()
     {
-        honey += 10000;
+        // 강화 레벨
+
+        upgrade.Add("queenHealth", 0);
+        upgrade.Add("queenStorage", 1);
+        upgrade.Add("honeycomb", 1);
+
+        upgrade.Add("beeHealth", 0);
+        upgrade.Add("beeStorage", 1);
+        upgrade.Add("beeSpeed", 0);
+        upgrade.Add("beeCount", 0);
+
+        upgrade.Add("royalQueenHealth", 0);
+        upgrade.Add("royalQueenStorage", 0);
+        upgrade.Add("royalBeeHealth", 0);
+        upgrade.Add("royalBeeStorage", 0);
+
+        // 강화 비용
+
+        upgradePrice.Add("queenHealth", 5);
+        upgradePrice.Add("queenStorage", 5);
+        upgradePrice.Add("honeycomb", 5);
+
+        upgradePrice.Add("beeHealth", 5);
+        upgradePrice.Add("beeStorage", 5);
+        upgradePrice.Add("beeSpeed", 5);
+        upgradePrice.Add("beeCount", 5);
+
+        upgradePrice.Add("royalQueenHealth", 5);
+        upgradePrice.Add("royalQueenStorage", 5);
+        upgradePrice.Add("royalBeeHealth", 5);
+        upgradePrice.Add("royalBeeStorage", 5);
+
+        // 강화 비용 표시
+
+        upgradeText.Add("queenHealth", GameObject.Find("queenHealthButtonText").GetComponent<Text>());
+        upgradeText.Add("queenStorage", GameObject.Find("queenStorageButtonText").GetComponent<Text>());
+        upgradeText.Add("honeycomb", GameObject.Find("honeyCombButtonText").GetComponent<Text>());
+
+        upgradeText.Add("beeHealth", GameObject.Find("beeHealthButtonText").GetComponent<Text>());
+        upgradeText.Add("beeStorage", GameObject.Find("beeStorageButtonText").GetComponent<Text>());
+        upgradeText.Add("beeSpeed", GameObject.Find("beeSpeedButtonText").GetComponent<Text>());
+        upgradeText.Add("beeCount", GameObject.Find("beeCountButtonText").GetComponent<Text>());
+
+        upgradeText.Add("royalQueenHealth", GameObject.Find("royalQueenHealthButtonText").GetComponent<Text>());
+        upgradeText.Add("royalQueenStorage", GameObject.Find("royalQueenStorageButtonText").GetComponent<Text>());
+        upgradeText.Add("royalBeeHealth", GameObject.Find("royalBeeHealthButtonText").GetComponent<Text>());
+        upgradeText.Add("royalBeeStorage", GameObject.Find("royalBeeStorageButtonText").GetComponent<Text>());
+
+        // 강화 레벨 표시
+
+        upgradeLevel.Add("queenHealth", GameObject.Find("queenHealthLevel").GetComponent<Text>());
+        upgradeLevel.Add("queenStorage", GameObject.Find("queenStorageLevel").GetComponent<Text>());
+        upgradeLevel.Add("honeycomb", GameObject.Find("honeyCombLevel").GetComponent<Text>());
+
+        upgradeLevel.Add("beeHealth", GameObject.Find("beeHealthLevel").GetComponent<Text>());
+        upgradeLevel.Add("beeStorage", GameObject.Find("beeStorageLevel").GetComponent<Text>());
+        upgradeLevel.Add("beeSpeed", GameObject.Find("beeSpeedLevel").GetComponent<Text>());
+        upgradeLevel.Add("beeCount", GameObject.Find("beeCountLevel").GetComponent<Text>());
+
+        upgradeLevel.Add("royalQueenHealth", GameObject.Find("royalQueenHealthLevel").GetComponent<Text>());
+        upgradeLevel.Add("royalQueenStorage", GameObject.Find("royalQueenStorageLevel").GetComponent<Text>());
+        upgradeLevel.Add("royalBeeHealth", GameObject.Find("royalBeeHealthLevel").GetComponent<Text>());
+        upgradeLevel.Add("royalBeeStorage", GameObject.Find("royalBeeStorageLevel").GetComponent<Text>());
+
+        // 강화 버튼
+
+        upgradeBtn.Add("queenHealth", GameObject.Find("queenHealthButton").GetComponent<Button>());
+        upgradeBtn.Add("queenStorage", GameObject.Find("queenStorageButton").GetComponent<Button>());
+        upgradeBtn.Add("honeycomb", GameObject.Find("honeyCombButton").GetComponent<Button>());
+
+        upgradeBtn.Add("beeHealth", GameObject.Find("beeHealthButton").GetComponent<Button>());
+        upgradeBtn.Add("beeStorage", GameObject.Find("beeStorageButton").GetComponent<Button>());
+        upgradeBtn.Add("beeSpeed", GameObject.Find("beeSpeedButton").GetComponent<Button>());
+        upgradeBtn.Add("beeCount", GameObject.Find("beeCountButton").GetComponent<Button>());
+
+        upgradeBtn.Add("royalQueenHealth", GameObject.Find("royalQueenHealthButton").GetComponent<Button>());
+        upgradeBtn.Add("royalQueenStorage", GameObject.Find("royalQueenStorageButton").GetComponent<Button>());
+        upgradeBtn.Add("royalBeeHealth", GameObject.Find("royalBeeHealthButton").GetComponent<Button>());
+        upgradeBtn.Add("royalBeeStorage", GameObject.Find("royalBeeStorageButton").GetComponent<Button>());
+
+        // 업그레이드 메뉴
+
+        panelList = GameObject.FindGameObjectsWithTag("upgradePanel");
+
+        // 퀘스트 메뉴
+
+        GameObject[] quest = GameObject.FindGameObjectsWithTag("quest");
+        questList = quest.OrderByDescending(go => go.transform.position.y).ToList();
     }
-    public void addJelly()
+
+    void HideObject()
     {
-        royalJelly += 10000;
+        GameObject.Find("QueenUpgradePanel").SetActive(false);
+        GameObject.Find("BeeUpgradePanel").SetActive(false);
+        GameObject.Find("RoyalUpgradePanel").SetActive(false);
+        questPanel.SetActive(false);
+
     }
 
     // 시간마다 온도 변화
@@ -250,14 +301,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator advertiseWork()
+    IEnumerator AdvertiseWork()
     {
         yield return new WaitForSeconds(30f);
         while (true)
         {
             Instantiate(prefabAd, new Vector2(-3.5f, 3.5f), Quaternion.identity);
 
-            yield return new WaitForSeconds(300f);
+            yield return new WaitForSeconds(180f);
         }
     }
 
@@ -275,10 +326,29 @@ public class GameManager : MonoBehaviour
                 {
                     if (temperature >= 0 && EventSystem.current.IsPointerOverGameObject() == false)
                     {
-                        honey += queenHealth + queenStorage + royalQueenHealth + royalQueenStorage;
+                        long gainHoney = upgrade["queenHealth"] + upgrade["queenStorage"] + upgrade["royalQueenHealth"] + upgrade["royalQueenStorage"];
+                        if (ItemManager.itemList[13] > 0)
+                        {
+                            gainHoney += upgrade["queenHealth"] * (ItemManager.itemList[13] + 1) / 1000;
+                        }
+                        if (ItemManager.itemList[12] > 0)
+                        {
+                            gainHoney += upgrade["queenStorage"] * (ItemManager.itemList[12] + 1) / 1000;
+                        }
+                        if (ItemManager.itemList[0] > 0)
+                        {
+                            gainHoney += gainHoney * (ItemManager.itemList[0] + 1) / 1000;
+                        }
+                        if (ItemManager.itemList[18] > 0)
+                        {
+                            gainHoney += gainHoney * (ItemManager.itemList[18] + 1) / 1000;
+                        }
+
+                        honey += gainHoney;
 
                         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                         Instantiate(prefabHoney, mousePosition, Quaternion.identity);
+                        questCount[0]++;
                     }
                 }
             }
@@ -292,6 +362,7 @@ public class GameManager : MonoBehaviour
         {
             lastTimeInt[i] = int.Parse(lastTimeString[i]);
         }
+
         if (DateTime.Now.Year > lastTimeInt[0])
         {
             lastTimeInt[1] -= 12;
@@ -325,16 +396,49 @@ public class GameManager : MonoBehaviour
                 skinCount++;
             }
         }
+        int maxMin = 180 + (skinCount * 30);
+        int item = 0;
+        if (ItemManager.itemList[2] > 0)
+        {
+            item += ItemManager.itemList[2] + 1;
+        }
+        if (ItemManager.itemList[16] > 0)
+        {
+            item += ItemManager.itemList[16] + 1;
+        }
+        if (ItemManager.itemList[26] > 0)
+        {
+            item += ItemManager.itemList[26] + 1;
+        }
+        maxMin = maxMin + maxMin * item / 1000;
 
-        if (emptyMinute > 5)
+        if (emptyMinute > 5 && upgrade["beeCount"] > 0)
         {
             rewardPanel.SetActive(true);
-            if (emptyMinute > (180 + (skinCount * 30)))
+            if (emptyMinute > maxMin)
             {
-                emptyMinute = 180 + (skinCount * 30);
+                emptyMinute = maxMin;
             }
+
+            int additional = 0;
+
+            if (ItemManager.itemList[3] > 0)
+            {
+                additional += ItemManager.itemList[3];
+            }
+            if (ItemManager.itemList[21] > 0)
+            {
+                additional += ItemManager.itemList[21];
+            }
+            if (ItemManager.itemList[31] > 0)
+            {
+                additional += ItemManager.itemList[31];
+            }
+            additional = (int)(additional * (emptyMinute * (upgrade["beeHealth"] + upgrade["beeStorage"]) * upgrade["beeCount"]) / 1000);
+
+            maxTimeText.text = "최대 보상 시간 : " + maxMin / 60 + "시간 " + maxMin % 60 + "분";
             alertText.text = "오프라인 " + emptyMinute / 60 + "시간 " + emptyMinute % 60 + "분 동안\n일벌이 벌어온 보상입니다!";
-            rewardText.text = DivideNumber(emptyMinute * (beeWork.beeHealth + beeWork.beeStorage) * beeCount);
+            rewardText.text = DivideNumber(emptyMinute * (upgrade["beeHealth"] + upgrade["beeStorage"]) * upgrade["beeCount"] + additional);
         }
     }
 
@@ -382,14 +486,101 @@ public class GameManager : MonoBehaviour
 
         if (emptyMinute > 5)
         {
-            rewardPanel.SetActive(true);
-            if (emptyMinute > (180 + (skinCount * 30)))
+            int maxMin = 180 + (skinCount * 30);
+            int item = 0;
+            if (ItemManager.itemList[2] > 0)
             {
-                emptyMinute = 180 + (skinCount * 30);
+                item += ItemManager.itemList[2] + 1;
             }
-            honey += emptyMinute * (beeWork.beeHealth + beeWork.beeStorage);
+            if (ItemManager.itemList[16] > 0)
+            {
+                item += ItemManager.itemList[16] + 1;
+            }
+            if (ItemManager.itemList[26] > 0)
+            {
+                item += ItemManager.itemList[26] + 1;
+            }
+            maxMin = maxMin + maxMin * item / 1000;
+
+            if (emptyMinute > maxMin)
+            {
+                emptyMinute = maxMin;
+            }
+
+            int additional = 0;
+
+            if (ItemManager.itemList[3] > 0)
+            {
+                additional += ItemManager.itemList[3];
+            }
+            if (ItemManager.itemList[21] > 0)
+            {
+                additional += ItemManager.itemList[21];
+            }
+            if (ItemManager.itemList[31] > 0)
+            {
+                additional += ItemManager.itemList[31];
+            }
+            additional = (int) (additional * (emptyMinute * (upgrade["beeHealth"] + upgrade["beeStorage"]) * upgrade["beeCount"]) / 1000);
+
+            honey += (emptyMinute * (upgrade["beeHealth"] + upgrade["beeStorage"]) * upgrade["beeCount"]) + additional ;
         }
         rewardPanel.SetActive(false);
+
+    }
+    void ResetQuest()
+    {
+        if (DateTime.Now.Day != day)
+        {
+            for (int i = 0; i < questCount.Length; i++)
+            {
+                questCount[i] = 0;
+                questClearList[i] = false;
+            }
+            day = DateTime.Now.Day;
+        }
+    }
+
+    void UpdateQuestText()
+    {
+        questCount[4] = 0;
+        for (int i = 0;i< questClearList.Length; i++)
+        {
+            if (questClearList[i])
+            {
+                questCount[4]++;
+            }
+        }
+
+        for(int j = 0; j < questList.Count; j++)
+        {
+            if (!questClearList[j])
+            {
+                questList[j].transform.Find("progressText").GetComponent<Text>().text = questCount[j] + " / " + questCondition[j];
+            }
+
+            if (questCount[j] < questCondition[j] || questClearList[j])
+            {
+                questList[j].transform.Find("clearButton").GetComponent<Button>().interactable = false;
+            }
+            else
+            {
+                questList[j].transform.Find("clearButton").GetComponent<Button>().interactable = true;
+            }
+        }
+    }
+
+    public void ClearQuest(int num)
+    {
+        if (questCount[num] >= questCondition[num])
+        {
+            questClearList[num] = true;
+            royalJelly += questReward[num];
+            questList[num].transform.Find("progressText").GetComponent<Text>().text = "Clear";
+            questList[num].transform.Find("clearButton").GetComponent<Button>().interactable = false;
+            questList[num].transform.Find("clearButton").Find("Image").gameObject.SetActive(false);
+            questList[num].transform.Find("clearButton").Find("Text").gameObject.SetActive(false);
+        }
     }
 
     // 상단 재화 표시 업데이트
@@ -401,115 +592,273 @@ public class GameManager : MonoBehaviour
     }
 
     // 여왕벌 체력 관련 표시 업데이트
-    void UpdateQueenHealthText()
-    {
-        queenHealthLevel.text = "Lv." + queenHealth;
-        queenHealthText.text = DivideNumber(queenHealthPrice);
-    }
 
-    // 여왕벌 체력 강화 진행
-    public void UpgradeQueenHealth()
+    void UpdateUpgradeText(string upgradeName)
     {
-        if (honey >= queenHealthPrice)
+        long discount = 0;
+        switch (upgradeName)
         {
-            honey -= queenHealthPrice;
-            queenHealth += 1;
-            queenHealthPrice += queenHealth * upgradeGraph;
+            case "queenHealth":
+                if (ItemManager.itemList[17] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[17] + 1) / 1000;
+                }
+                break;
+            case "queenStorage":
+                if (ItemManager.itemList[19] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[19] + 1) / 1000;
+                }
+                break;
+            case "beeHealth":
+                if (ItemManager.itemList[27] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[27] + 1) / 1000;
+                }
+                break;
+            case "beeStorage":
+                if (ItemManager.itemList[29] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[29] + 1) / 1000;
+                }
+                break;
+            case "royalQueenHealth":
+            case "royalQueenStorage":
+            case "royalBeeHealth":
+            case "royalBeeStorage":
+                if (ItemManager.itemList[8] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[8] + 1) / 1000;
+                }
+                break;
+            default: break;
+        }
+
+        upgradeText[upgradeName].text = DivideNumber(upgradePrice[upgradeName] - discount);
+        upgradeLevel[upgradeName].text = "Lv." + DivideNumber(upgrade[upgradeName]);
+        if (upgradeName == "honeycomb" && upgrade[upgradeName] >= maxHoneyComb)
+        {
+            upgradeText[upgradeName].text = "MAX";
+        }
+        else if (upgradeName == "beeCount" && upgrade[upgradeName] >= upgrade["honeycomb"])
+        {
+            upgradeText[upgradeName].text = "MAX";
+        }
+        else if (upgradeName == "beeSpeed" && upgrade[upgradeName] >= 50)
+        {
+            upgradeText[upgradeName].text = "MAX";
         }
     }
 
-    // 여왕벌 체력 버튼 활성화
-    void QueenHealthButtonActiveCheck()
+    public void BuyUpgradeHoney(string upgradeName)
     {
-        if (honey >= queenHealthPrice)
+        long discount = 0;
+        switch (upgradeName)
         {
-            queenHealthBtn.interactable = true;
+            case "queenHealth":
+                if (ItemManager.itemList[17] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[17] + 1) / 1000;
+                }
+                break;
+            case "queenStorage":
+                if (ItemManager.itemList[19] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[19] + 1) / 1000;
+                }
+                break;
+            case "beeHealth":
+                if (ItemManager.itemList[27] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[27] + 1) / 1000;
+                }
+                break;
+            case "beeStorage":
+                if (ItemManager.itemList[29] != 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[29] + 1) / 1000;
+                }
+                break;
+            default: break;
         }
-        else
-        {
-            queenHealthBtn.interactable = false;
-        }
-    }
 
-    // 여왕벌 꿀주머니 관련 표시 업데이트
-    void UpdateQueenStorageText()
-    {
-        queenStorageLevel.text = "Lv." + queenStorage;
-        queenStorageText.text = DivideNumber(queenStoragePrice);
-    }
-
-    // 여왕벌 꿀주머니 강화 진행
-    public void UpgradeQueenStorage()
-    {
-        if (honey >= queenStoragePrice)
+        if (honey >= upgradePrice[upgradeName] - discount)
         {
-            honey -= queenStoragePrice;
-            queenStorage += 1;
-            queenStoragePrice += queenStorage * upgradeGraph;
-        }
-    }
-
-    // 여왕벌 꿀주머니 버튼 활성화
-    void QueenStorageButtonActiveCheck()
-    {
-        if (honey >= queenStoragePrice)
-        {
-            queenStorageBtn.interactable = true;
-        }
-        else
-        {
-            queenStorageBtn.interactable = false;
-        }
-    }
-
-    // 벌집 관련 표시 업데이트
-    void UpdateHoneyCombText()
-    {
-        if (maxHoneyComb > honeyComb)
-        {
-            honeyCombLevel.text = "Lv." + honeyComb;
-            honeyCombText.text = DivideNumber(honeyCombPrice);
-        }
-        else
-        {
-            honeyCombLevel.text = "Lv." + honeyComb;
-            honeyCombText.text = "MAX";
-        }
-    }
-
-    // 벌집 강화 진행
-    public void UpgradeHoneyComb()
-    {
-        if (honey >= honeyCombPrice && maxHoneyComb > honeyComb)
-        {
-            honey -= honeyCombPrice;
-            honeyComb += 1;
-            honeyCombPrice += honeyComb * combGraph;
-
-            CreateHoneyComb();
-            if(honeyComb%5 == 0 && honeyComb > 14)
+            honey -= upgradePrice[upgradeName] - discount;
+            upgrade[upgradeName] += 1;
+            if (upgradeName == "honeycomb")
             {
-                CreateHoneyCombBG();
+                int honeyComb = (int)upgrade["honeycomb"];
+                if (ItemManager.itemList[5] > 0)
+                {
+                    if (ItemManager.itemList[5] < 9)
+                    {
+                        honeyComb += 1;
+                    }
+                    else
+                    {
+                        honeyComb += ItemManager.itemList[5] / 10;
+                    }
+                }
+
+                upgradePrice[upgradeName] += upgrade[upgradeName] * combGraph;
+                CreateHoneyComb();
+                if (honeyComb % 5 == 0 && honeyComb > 14)
+                {
+                    CreateHoneyCombBG();
+                }
+            }
+            else if (upgradeName == "beeCount")
+            {
+                upgradePrice[upgradeName] += upgrade[upgradeName] * beeGraph;
+                CreateBeeCount();
+            }
+            else if (upgradeName == "beeSpeed")
+            {
+                upgradePrice[upgradeName] += upgrade[upgradeName] * speedGraph;
+            }
+            else
+            {
+                upgradePrice[upgradeName] += upgrade[upgradeName] * upgradeGraph;
+            }
+            UpdateUpgradeText(upgradeName);
+            questCount[1]++;
+        }
+    }
+
+    public void BuyUpgradeJelly(string upgradeName)
+    {
+        long discount = 0;
+        if (ItemManager.itemList[8] != 0)
+        {
+            discount += upgradePrice[upgradeName] * (ItemManager.itemList[8] + 1) / 1000;
+        }
+        if (royalJelly >= upgradePrice[upgradeName] - discount)
+        {
+            royalJelly -= upgradePrice[upgradeName];
+            upgrade[upgradeName] += 1;
+            upgradePrice[upgradeName] += upgrade[upgradeName] * upgradeGraph;
+            UpdateUpgradeText(upgradeName);
+            questCount[1]++;
+        }
+    }
+
+    void UpgradeyActiveCheck(string upgradeName)
+    {
+        long discount = 0;
+        switch (upgradeName)
+        {
+            case "queenHealth":
+                if (ItemManager.itemList[17] > 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[17] + 1) / 1000;
+                }
+                break;
+            case "queenStorage":
+                if (ItemManager.itemList[19] > 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[19] + 1) / 1000;
+                }
+                break;
+            case "beeHealth":
+                if (ItemManager.itemList[27] > 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[27] + 1) / 1000;
+                }
+                break;
+            case "beeStorage":
+                if (ItemManager.itemList[29] > 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[29] + 1) / 1000;
+                }
+                break;
+            case "royalQueenHealth":
+            case "royalQueenStorage":
+            case "royalBeeHealth":
+            case "royalBeeStorage":
+                if (ItemManager.itemList[8] > 0)
+                {
+                    discount += upgradePrice[upgradeName] * (ItemManager.itemList[8] + 1) / 1000;
+                }
+                break;
+            default: break;
+        }
+
+        int beeCount = (int)upgrade["beeCount"];
+        if (ItemManager.itemList[25] > 0)
+        {
+            if (ItemManager.itemList[25] < 9)
+            {
+                beeCount += 1;
+            }
+            else
+            {
+                beeCount += ItemManager.itemList[25] / 10;
             }
         }
-    }
 
-    // 벌집 강화 버튼 활성화
-    void HoneyCombButtonActiveCheck()
-    {
-        if (honey >= honeyCombPrice && maxHoneyComb > honeyComb)
+        int honeyComb = (int)upgrade["honeycomb"];
+        if (ItemManager.itemList[5] > 0)
         {
-            honeyCombBtn.interactable = true;
+            if (ItemManager.itemList[5] < 9)
+            {
+                honeyComb += 1;
+            }
+            else
+            {
+                honeyComb += ItemManager.itemList[5] / 10;
+            }
+        }
+
+        if (upgradeName == "honeycomb" && honeyComb >= maxHoneyComb)
+        {
+            upgradeBtn[upgradeName].interactable = false;
+        }
+        else if (upgradeName == "beeCount" && beeCount >= honeyComb)
+        {
+            upgradeBtn[upgradeName].interactable = false;
+        }
+        else if (upgradeName == "beeSpeed" && upgrade[upgradeName] >= 50)
+        {
+            upgradeBtn[upgradeName].interactable = false;
+        }
+        else if (upgradeName[..5] == "royal")
+        {
+            if (royalJelly < upgradePrice[upgradeName] - discount)
+            {
+                upgradeBtn[upgradeName].interactable = false;
+            }
+            else
+            {
+                upgradeBtn[upgradeName].interactable = true;
+            }
+        }
+        else if (honey < upgradePrice[upgradeName] - discount)
+        {
+            upgradeBtn[upgradeName].interactable = false;
         }
         else
         {
-            honeyCombBtn.interactable = false;
+            upgradeBtn[upgradeName].interactable = true;
         }
     }
 
     // 벌집 생성
     void CreateHoneyComb()
     {
+        int honeyComb = (int)upgrade["honeycomb"];
+        if (ItemManager.itemList[5] > 0)
+        {
+            if (ItemManager.itemList[5] < 9)
+            {
+                honeyComb += 1;
+            }
+            else
+            {
+                honeyComb += ItemManager.itemList[5] / 10;
+            }
+        }
+
         Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
         float spotX = honeyCombSpot.x + ((honeyComb - 1) % honeyCombWidth) * honeyCombX;
         float spotY = honeyCombSpot.y - ((honeyComb - 1) / honeyCombWidth) * honeyCombY - (((honeyComb - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);
@@ -522,163 +871,33 @@ public class GameManager : MonoBehaviour
     {
         Vector2 honeyCombBGSpot = GameObject.Find("honeycombBackground").transform.position;
         float spotX = honeyCombBGSpot.x;
-        float spotY = honeyCombBGSpot.y - (1.2f * (honeyComb / 5));
+        float spotY = honeyCombBGSpot.y - (1.2f * (upgrade["honeycomb"] / 5));
 
         Instantiate(prefabHoneyCombBG, new Vector2(spotX, spotY), Quaternion.identity);
 
-        if (honeyComb / 5 > 2)
+        if (upgrade["honeycomb"] / 5 > 2)
         {
             mainCameraDrag.mainLimitMinY -= 1.2f;
             mainCameraDrag.limitMinY = mainCameraDrag.mainLimitMinY;
         }
     }
 
-    // 일벌 체력 관련 표시 업데이트
-    void UpdateBeeHealthText()
-    {
-        beeHealthLevel.text = "Lv." + beeWork.beeHealth;
-        beeHealthText.text = DivideNumber(beeHealthPrice);
-    }
-
-    // 일벌 체력 강화 진행
-    public void UpgradeBeeHealth()
-    {
-        if (honey >= beeHealthPrice)
-        {
-            honey -= beeHealthPrice;
-            beeWork.beeHealth += 1;
-            beeHealthPrice += beeWork.beeHealth * upgradeGraph;
-        }
-    }
-
-    // 일벌 체력 버튼 활성화
-    void BeeHealthButtonActiveCheck()
-    {
-        if (honey >= beeHealthPrice)
-        {
-            beeHealthBtn.interactable = true;
-        }
-        else
-        {
-            beeHealthBtn.interactable = false;
-        }
-    }
-
-    // 일벌 꿀주머니 관련 표시 업데이트
-    void UpdateBeeStorageText()
-    {
-        beeStorageLevel.text = "Lv." + beeWork.beeStorage;
-        beeStorageText.text = DivideNumber(beeStoragePrice);
-    }
-
-    // 일벌 꿀주머니 강화 진행
-    public void UpgradeBeeStorage()
-    {
-        if (honey >= beeStoragePrice)
-        {
-            honey -= beeStoragePrice;
-            beeWork.beeStorage += 1;
-            beeStoragePrice += beeWork.beeStorage * upgradeGraph;
-        }
-    }
-
-    // 일벌 꿀주머니 버튼 활성화
-    void BeeStorageButtonActiveCheck()
-    {
-        if (honey >= beeStoragePrice)
-        {
-            beeStorageBtn.interactable = true;
-        }
-        else
-        {
-            beeStorageBtn.interactable = false;
-        }
-    }
-    
-    // 일벌 속도 관련 표시 업데이트
-    void UpdateBeeSpeedText()
-    {
-        if (beeWork.beeSpeed < 50)
-        {
-            beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;
-            beeSpeedText.text = DivideNumber(beeSpeedPrice);
-        }
-        else
-        {
-            beeSpeedLevel.text = "Lv." + beeWork.beeSpeed;
-            beeSpeedText.text = "MAX";
-        }
-    }
-
-    // 일벌 속도 강화 진행
-    public void UpgradeBeeSpeed()
-    {
-        if (honey >= beeSpeedPrice)
-        {
-            honey -= beeSpeedPrice;
-            beeWork.beeSpeed += 1;
-            beeSpeedPrice += beeWork.beeSpeed * speedGraph;
-        }
-    }
-
-    // 일벌 속도 버튼 활성화
-    void BeeSpeedButtonActiveCheck()
-    {
-        if (honey >= beeSpeedPrice && beeWork.beeSpeed < 50)
-        {
-            beeSpeedBtn.interactable = true;
-        }
-        else
-        {
-            beeSpeedBtn.interactable = false;
-        }
-    }
-
-    // 일벌 수 관련 표시 업데이트
-    void UpdateBeeCountText()
-    {
-        if (beeCount < honeyComb)
-        {
-            beeCountLevel.text = "Lv." + beeCount;
-            beeCountText.text = DivideNumber(beeCountPrice);
-        }
-        else
-        {
-            beeCountLevel.text = "Lv." + beeCount;
-            beeCountText.text = "MAX";
-        }
-        
-    }
-
-    // 일벌 수 강화 진행
-    public void UpgradeBeeCount()
-    {
-        if (honey >= beeCountPrice && beeCount < honeyComb)
-        {
-            honey -= beeCountPrice;
-            beeCount += 1;
-            beeCountPrice += beeCount * beeGraph;
-
-            CreateBeeCount();
-        }
-    }
-
-    // 일벌 수 증가 버튼 활성화
-    void BeeCountButtonActiveCheck()
-    {
-        if (honey >= beeCountPrice && beeCount < honeyComb)
-        {
-            beeCountBtn.interactable = true;
-        }
-        else
-        {
-            beeCountBtn.interactable = false;
-        }
-    }
-
     // 일벌 생성
     void CreateBeeCount()
     {
+        int beeCount = (int)upgrade["beeCount"];
+        if (ItemManager.itemList[25] > 0)
+        {
+            if (ItemManager.itemList[25] < 9)
+            {
+                beeCount += 1;
+            }
+            else
+            {
+                beeCount += ItemManager.itemList[25] / 10;
+            }
+        }
+
         Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
         float spotX = honeyCombSpot.x + ((beeCount - 1) % honeyCombWidth) * honeyCombX;
         float spotY = honeyCombSpot.y - ((beeCount - 1) / honeyCombWidth) * honeyCombY - (((beeCount - 1) % honeyCombWidth) % 2) * (honeyCombY / 2);
@@ -688,134 +907,10 @@ public class GameManager : MonoBehaviour
         Instantiate(prefabBee, new Vector2(spotX, spotY), Quaternion.identity);
     }
 
-    // 로얄젤리 여왕벌 체력 관련 표시 업데이트
-    void UpdateRoyalQueenHealthText()
-    {
-        royalQueenHealthLevel.text = "Lv." + royalQueenHealth;
-        royalQueenHealthText.text = DivideNumber(royalQueenHealthPrice);
-    }
-
-    // 로얄젤리 여왕벌 체력 강화 진행
-    public void UpgradeRoyalQueenHealth()
-    {
-        if (royalJelly >= royalQueenHealthPrice)
-        {
-            royalJelly -= royalQueenHealthPrice;
-            royalQueenHealth += 1;
-            royalQueenHealthPrice += royalQueenHealth * upgradeGraph;
-        }
-    }
-
-    // 로얄젤리 여왕벌 체력 버튼 활성화
-    void RoyalQueenHealthButtonActiveCheck()
-    {
-        if (royalJelly >= royalQueenHealthPrice)
-        {
-            royalQueenHealthBtn.interactable = true;
-        }
-        else
-        {
-            royalQueenHealthBtn.interactable = false;
-        }
-    }
-
-    // 로얄젤리 여왕벌 꿀주머니 관련 표시 업데이트
-    void UpdateRoyalQueenStorageText()
-    {
-        royalQueenStorageLevel.text = "Lv." + royalQueenStorage;
-        royalQueenStorageText.text = DivideNumber(royalQueenStoragePrice);
-    }
-
-    // 로얄젤리 여왕벌 꿀주머니 강화 진행
-    public void UpgradeRoyalQueenStorage()
-    {
-        if (royalJelly >= royalQueenStoragePrice)
-        {
-            royalJelly -= royalQueenStoragePrice;
-            royalQueenStorage += 1;
-            royalQueenStoragePrice += royalQueenStorage * upgradeGraph;
-        }
-    }
-
-    // 로얄젤리 여왕벌 꿀주머니 버튼 활성화
-    void  RoyalQueenStorageButtonActiveCheck()
-    {
-        if (royalJelly >= royalQueenStoragePrice)
-        {
-            royalQueenStorageBtn.interactable = true;
-        }
-        else
-        {
-            royalQueenStorageBtn.interactable = false;
-        }
-    }
-
-    // 로얄젤리 일벌 체력 관련 표시 업데이트
-    void UpdateRoyalBeeHealthText()
-    {
-        royalBeeHealthLevel.text = "Lv." + beeWork.royalBeeHealth;
-        royalBeeHealthText.text = DivideNumber(royalBeeHealthPrice);
-    }
-
-    // 로얄젤리 일벌 체력 강화 진행
-    public void UpgradeRoyalBeeHealth()
-    {
-        if (royalJelly >= royalBeeHealthPrice)
-        {
-            royalJelly -= royalBeeHealthPrice;
-            beeWork.royalBeeHealth += 1;
-            royalBeeHealthPrice += beeWork.royalBeeHealth * upgradeGraph;
-        }
-    }
-
-    // 로얄젤리 일벌 체력 버튼 활성화
-    void RoyalBeeHealthButtonActiveCheck()
-    {
-        if (royalJelly >= royalBeeHealthPrice)
-        {
-            royalBeeHealthBtn.interactable = true;
-        }
-        else
-        {
-            royalBeeHealthBtn.interactable = false;
-        }
-    }
-
-    // 로얄젤리 일벌 꿀주머니 관련 표시 업데이트
-    void UpdateRoyalBeeStorageText()
-    {
-        royalBeeStorageLevel.text = "Lv." + beeWork.royalBeeStorage;
-        royalBeeStorageText.text = DivideNumber(royalBeeStoragePrice);
-    }
-
-    // 로얄젤리 일벌 꿀주머니 강화 진행
-    public void UpgradeRoyalBeeStorage()
-    {
-        if (royalJelly >= royalBeeStoragePrice)
-        {
-            royalJelly -= royalBeeStoragePrice;
-            beeWork.royalBeeStorage += 1;
-            royalBeeStoragePrice += beeWork.royalBeeStorage * upgradeGraph;
-        }
-    }
-
-    // 로얄젤리 일벌 꿀주머니 버튼 활성화
-    void RoyalBeeStorageButtonActiveCheck()
-    {
-        if (royalJelly >= royalBeeStoragePrice)
-        {
-            royalBeeStorageBtn.interactable = true;
-        }
-        else
-        {
-            royalBeeStorageBtn.interactable = false;
-        }
-    }
-
     // 분봉하기 버튼 활성화
     void SwarmingButtonActiveCheck()
     {
-        if (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage >= 100)
+        if (upgrade["queenHealth"] + upgrade["queenStorage"] + upgrade["beeHealth"] + upgrade["beeStorage"] >= 100)
         {
             swarmingBtn.interactable = true;
         }
@@ -828,39 +923,54 @@ public class GameManager : MonoBehaviour
     // 분봉 모든 강화 사항을 초기화 하고 로얄젤리를 습득
     public void Swarming()
     {
-        honey = 0;
+        long reward = upgrade["queenHealth"] + upgrade["queenStorage"] + upgrade["beeHealth"] + upgrade["beeStorage"];
+        long additional = 0;
 
-        if (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage >= 100)
+        if (reward >= 100)
         {
-            royalJelly += (queenHealth + queenStorage + beeWork.beeHealth + beeWork.beeStorage) / 10;
-        }
+            honey = 0;
+            if (ItemManager.itemList[7] != 0)
+            {
+                additional += reward * (ItemManager.itemList[7] + 1) / 1000;
+            }
+            if (ItemManager.itemList[15] != 0)
+            {
+                additional += reward * (ItemManager.itemList[15] + 1) / 1000;
+            }
+            royalJelly += (reward + additional) / 10;
 
-        queenHealth = 0;
-        queenHealthPrice = 5;
-        queenStorage = 1;
-        queenStoragePrice = 5;
-        honeyComb = 1;
-        honeyCombPrice = 5;
 
-        beeWork.beeHealth = 0;
-        beeHealthPrice = 5;
-        beeWork.beeStorage = 1;
-        beeStoragePrice = 5;
-        beeWork.beeSpeed = 0;
-        beeSpeedPrice = 5;
-        beeCount = 0;
-        beeCountPrice = 5;
+            upgrade["queenHealth"] = 0;
+            upgradePrice["queenHealth"] = 5;
+            upgrade["queenStorage"] = 1;
+            upgradePrice["queenStorage"] = 5;
+            upgrade["honeycomb"] = 1;
+            upgradePrice["honeycomb"] = 5;
 
-        GameObject[] bees = GameObject.FindGameObjectsWithTag("bee");
-        for(int i = 0; i < bees.Length; i++)
-        {
-            Destroy(bees[i]);
-        }
+            upgrade["beeHealth"] = 0;
+            upgradePrice["beeHealth"] = 5;
+            upgrade["beeStorage"] = 1;
+            upgradePrice["beeStorage"] = 5;
+            upgrade["beeSpeed"] = 0;
+            upgradePrice["beeSpeed"] = 5;
+            upgrade["beeCount"] = 0;
+            upgradePrice["beeCount"] = 5;
 
-        GameObject[] honeycombs = GameObject.FindGameObjectsWithTag("honeycomb");
-        for (int j = 1; j < honeycombs.Length; j++)
-        {
-            Destroy(honeycombs[j]);
+            GameObject[] bees = GameObject.FindGameObjectsWithTag("bee");
+            for (int i = 0; i < bees.Length; i++)
+            {
+                Destroy(bees[i]);
+            }
+
+            GameObject[] honeycombs = GameObject.FindGameObjectsWithTag("honeycomb");
+            for (int j = 1; j < honeycombs.Length; j++)
+            {
+                Destroy(honeycombs[j]);
+            }
+            foreach (KeyValuePair<string, Text> pair in upgradeText)
+            {
+                UpdateUpgradeText(pair.Key);
+            }
         }
     }
 
@@ -872,33 +982,10 @@ public class GameManager : MonoBehaviour
         saveData.royalJelly = royalJelly;
         saveData.honey = honey;
 
-        saveData.queenHealth = queenHealth;
-        saveData.queenHealthPrice = queenHealthPrice;
-        saveData.queenStorage = queenStorage;
-        saveData.queenStoragePrice = queenStoragePrice;
-
-        saveData.beeHealthPrice = beeHealthPrice;
-        saveData.beeStoragePrice = beeStoragePrice;
-        saveData.beeSpeedPrice = beeSpeedPrice;
-
-        saveData.beeCount = beeCount;
-        saveData.beeCountPrice = beeCountPrice;
-        saveData.honeyComb = honeyComb;
-        saveData.honeyCombPrice = honeyCombPrice;
-
-        saveData.royalQueenHealth = royalQueenHealth;
-        saveData.royalQueenHealthPrice = royalQueenHealthPrice;
-        saveData.royalQueenStorage = royalQueenStorage;
-        saveData.royalQueenStoragePrice = royalQueenStoragePrice;
-        saveData.royalBeeHealthPrice = royalBeeHealthPrice;
-        saveData.royalBeeStoragePrice = royalBeeStoragePrice;
-
-        saveData.beeHealth = beeWork.beeHealth;
-        saveData.beeStorage = beeWork.beeStorage;
-        saveData.beeSpeed = beeWork.beeSpeed;
-
-        saveData.royalBeeHealth = beeWork.royalBeeHealth;
-        saveData.royalBeeStorage = beeWork.royalBeeStorage;
+        saveData.upgradeKey = new List<string>(upgrade.Keys);
+        saveData.upgradeValue = new List<long>(upgrade.Values);
+        saveData.upgradePriceKey = new List<string>(upgradePrice.Keys);
+        saveData.upgradePriceValue = new List<long>(upgradePrice.Values);
 
         saveData.Queen = Queen;
         saveData.Bee = Bee;
@@ -913,6 +1000,18 @@ public class GameManager : MonoBehaviour
         saveData.mapSkinList = MapManager.mapSkinList;
 
         saveData.lastPlayTime = DateTime.Now.Year + "/" + DateTime.Now.Month + "/" + DateTime.Now.Day + "/" + DateTime.Now.Hour + "/" + DateTime.Now.Minute;
+
+        saveData.day = day;
+        saveData.questClearList = questClearList;
+        saveData.questCount = questCount;
+
+        saveData.collecting = CollectManager.collecting;
+        saveData.collectStartTime = CollectManager.collectStartTime;
+        saveData.itemName = CollectManager.itemName;
+
+        saveData.itemList = ItemManager.itemList;
+
+        saveData.tutorialCount = TutorialManager.Count;
 
         string path = Application.persistentDataPath + "/save.xml";
         XmlManager.XmlSave<SaveData>(saveData, path);
@@ -929,33 +1028,14 @@ public class GameManager : MonoBehaviour
         royalJelly = saveData.royalJelly;
         honey = saveData.honey;
 
-        queenHealth = saveData.queenHealth;
-        queenHealthPrice = saveData.queenHealthPrice;
-        queenStorage = saveData.queenStorage;
-        queenStoragePrice = saveData.queenStoragePrice;
-
-        beeHealthPrice = saveData.beeHealthPrice;
-        beeStoragePrice = saveData.beeStoragePrice;
-        beeSpeedPrice = saveData.beeSpeedPrice;
-
-        beeCount = saveData.beeCount;
-        beeCountPrice = saveData.beeCountPrice;
-        honeyComb = saveData.honeyComb;
-        honeyCombPrice = saveData.honeyCombPrice;
-
-        royalQueenHealth = saveData.royalQueenHealth;
-        royalQueenHealthPrice = saveData.royalQueenHealthPrice;
-        royalQueenStorage = saveData.royalQueenStorage;
-        royalQueenStoragePrice = saveData.royalQueenStoragePrice;
-        royalBeeHealthPrice = saveData.royalBeeHealthPrice;
-        royalBeeStoragePrice = saveData.royalBeeStoragePrice;
-
-        beeWork.beeHealth = saveData.beeHealth;
-        beeWork.beeStorage = saveData.beeStorage;
-        beeWork.beeSpeed = saveData.beeSpeed;
-
-        beeWork.royalBeeHealth = saveData.royalBeeHealth;
-        beeWork.royalBeeStorage = saveData.royalBeeStorage;
+        for (int i = 0; i < saveData.upgradeKey.Count; i++)
+        {
+            upgrade[saveData.upgradeKey[i]] = saveData.upgradeValue[i];
+        }
+        for (int i = 0; i < saveData.upgradePriceKey.Count; i++)
+        {
+            upgradePrice[saveData.upgradePriceKey[i]] = saveData.upgradePriceValue[i];
+        }
 
         Queen = saveData.Queen;
         Bee = saveData.Bee;
@@ -969,14 +1049,25 @@ public class GameManager : MonoBehaviour
         SkinManager.beeSkinList = saveData.beeSkinList;
         MapManager.mapSkinList = saveData.mapSkinList;
 
+        day = saveData.day;
+        questClearList = saveData.questClearList;
+        questCount = saveData.questCount;
+
         lastPlayTime = saveData.lastPlayTime;
+
+        CollectManager.collecting = saveData.collecting;
+        CollectManager.collectStartTime = saveData.collectStartTime;
+        CollectManager.itemName = saveData.itemName;
+
+        ItemManager.itemList = saveData.itemList;
+
+        TutorialManager.Count = saveData.tutorialCount;
     }
 
-    // 저장 내역에 맞게 벌집 생성
-    void FillHoneyComb()
+    public void CheckMaxHoneyComb()
     {
         maxHoneyComb = 15;
-        for (int i = 0; i < MapManager.mapSkinList.Length; i++)
+        for (int i = 1; i < MapManager.mapSkinList.Length; i++)
         {
             if (MapManager.mapSkinList[i])
             {
@@ -984,11 +1075,29 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        if (ItemManager.itemList[4] > 0)
+        {
+            if (ItemManager.itemList[4] < 9)
+            {
+                maxHoneyComb += 1;
+            }
+            else
+            {
+                maxHoneyComb += (ItemManager.itemList[4] + 1) / 10;
+            }
+        }
+    }
+
+    // 저장 내역에 맞게 벌집 생성
+    void FillHoneyComb()
+    {
+        CheckMaxHoneyComb();
+
         GameObject[] honeycombs = GameObject.FindGameObjectsWithTag("honeycomb");
 
-        if (honeyComb != honeycombs.Length)
+        if (upgrade["honeycomb"] != honeycombs.Length)
         {
-            for (int i = honeycombs.Length; i < honeyComb; i++)
+            for (int i = honeycombs.Length; i < upgrade["honeycomb"]; i++)
             {
                 Vector2 honeyCombSpot = GameObject.Find("honeycomb").transform.position;
                 float spotX = honeyCombSpot.x + (i % honeyCombWidth) * honeyCombX;
@@ -1004,9 +1113,9 @@ public class GameManager : MonoBehaviour
     {
         GameObject[] honeycombBGs = GameObject.FindGameObjectsWithTag("honeycombBackground");
 
-        if (honeyComb / 5 > honeycombBGs.Length || 3 > honeycombBGs.Length)
+        if (upgrade["honeycomb"] / 5 > honeycombBGs.Length || 3 > honeycombBGs.Length)
         {
-            for (int i = honeycombBGs.Length; i <= honeyComb / 5 || i < 3; i++)
+            for (int i = honeycombBGs.Length; i <= upgrade["honeycomb"] / 5 || i < 3; i++)
             {
                 Vector2 honeyCombBGSpot = GameObject.Find("honeycombBackground").transform.position;
                 float spotX = honeyCombBGSpot.x;
@@ -1030,6 +1139,19 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < bees.Length; i++)
         {
             Destroy(bees[i]);
+        }
+
+        int beeCount = (int) upgrade["beeCount"];
+        if (ItemManager.itemList[25] > 0)
+        {
+            if(ItemManager.itemList[25] < 9)
+            {
+                beeCount += 1;
+            }
+            else
+            {
+                beeCount += ItemManager.itemList[25] / 10;
+            }
         }
 
         for (int i = 0; i < beeCount; i++)
@@ -1098,15 +1220,6 @@ public class GameManager : MonoBehaviour
     // 맵 선택 스킨 적용
     public void MapSelect()
     {
-        maxHoneyComb = 15;
-        for (int i = 0; i < MapManager.mapSkinList.Length; i++)
-        {
-            if (MapManager.mapSkinList[i])
-            {
-                maxHoneyComb += 5;
-            }
-        }
-
         backgroundImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/background/background" + Map);
         hiveImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/hive/hive" + Map);
 
@@ -1117,7 +1230,7 @@ public class GameManager : MonoBehaviour
         for (int i = 1; i < sortedbtnList.Count; i++)
         {
             string check = sortedbtnList[i].GetComponent<SpriteRenderer>().name;
-            check = check.Substring(3);
+            check = check[3..];
 
             if (check == Map)
             {
@@ -1186,7 +1299,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
 
     // 숫자가 천단위 기준으로 반올림하여 문자로 축약 계산
     string DivideNumber(long num)
